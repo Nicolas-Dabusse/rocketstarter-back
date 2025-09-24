@@ -7,11 +7,16 @@ WORKDIR /app
 COPY package*.json ./
 COPY tsconfig.json ./
 
+# Copy data folder (for SQLite)
+RUN mkdir -p /app/data
+COPY data/ ./data/
+
 # Install all dependencies (including dev dependencies for building)
 RUN npm ci
 
 # Copy source code
 COPY src/ ./src/
+
 
 # Build TypeScript
 RUN npm run build
@@ -30,6 +35,9 @@ RUN npm ci --only=production && npm cache clean --force
 
 # Copy built application from builder stage
 COPY --from=builder /app/dist ./dist
+
+# Copy data folder from builder stage
+COPY --from=builder /app/data ./data
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \

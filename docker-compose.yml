@@ -1,51 +1,23 @@
-version: '3.8'
-
+# Node.js Application
 services:
-  # PostgreSQL Database
-  postgres:
-    image: postgres:16
-    container_name: rocketstarter-postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB:-rocketstarter}
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-    networks:
-      - rocketstarter-network
-
-  # Node.js Application
   app:
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile.dev
     container_name: rocketstarter-app
     restart: unless-stopped
     environment:
       NODE_ENV: development
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_NAME: ${POSTGRES_DB:-rocketstarter}
-      DB_USER: ${POSTGRES_USER:-postgres}
-      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       PORT: 3000
+      SQLITE_PATH: ./data/database.sqlite
     ports:
       - "3000:3000"
     volumes:
       - .:/app
       - /app/node_modules
-    depends_on:
-      - postgres
     networks:
       - rocketstarter-network
     command: npm run dev:watch
-
-volumes:
-  postgres_data:
 
 networks:
   rocketstarter-network:
