@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { healthCheck, databaseTest, apiInfo } from '../controllers/health.controllers';
+import { healthCheck, databaseTest, apiInfo } from '../controllers/health.controller';
 import * as userController from '../controllers/user.controller';
 import * as projectController from '../controllers/project.controller';
 import * as taskController from '../controllers/task.controller';
