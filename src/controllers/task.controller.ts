@@ -58,14 +58,22 @@ export const updateTask = async (req: Request, res: Response): Promise<void> => 
       res.status(404).json({ success: false, error: 'Task not found' });
       return;
     }
-    // Vérification du droit : builder ou owner du projet
-    const builder = updateData.builder;
     const project = await Project.findByPk(task.projectId);
     const userAddress = req.headers['x-user-address'] as string | undefined;
+
+    // Cas 1 : la tâche n'a pas de builder, on autorise l'utilisateur à s'auto-attribuer la tâche
+    if (!task.builder && updateData.builder && userAddress && userAddress === updateData.builder) {
+      await task.update({ ...updateData, builder: userAddress });
+      res.status(200).json({ success: true, data: task, message: 'Task attributed to builder' });
+      return;
+    }
+
+    // Cas 2 : la tâche a déjà un builder, seul ce builder ou le owner du projet peut modifier
     if (userAddress && userAddress !== task.builder && userAddress !== project?.owner) {
       res.status(403).json({ success: false, error: 'Forbidden: only builder or owner can update' });
       return;
     }
+
     await task.update(updateData);
     res.status(200).json({ success: true, data: task, message: 'Task updated' });
   } catch (error) {
