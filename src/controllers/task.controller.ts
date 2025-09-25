@@ -61,9 +61,11 @@ export const updateTask = async (req: Request, res: Response): Promise<void> => 
     const project = await Project.findByPk(task.projectId);
     const userAddress = req.headers['x-user-address'] as string | undefined;
 
-    // Cas 1 : la tâche n'a pas de builder, on autorise l'utilisateur à s'auto-attribuer la tâche
-    if (!task.builder && updateData.builder && userAddress && userAddress === updateData.builder) {
-      await task.update({ ...updateData, builder: userAddress });
+
+    // Cas 1 : la tâche n'a pas de builder (null, undefined ou string vide) ET est en 'todo', on autorise l'utilisateur à s'auto-attribuer la tâche
+    const noBuilder = !task.builder || task.builder === null || typeof task.builder === 'undefined' || task.builder === '';
+    if (noBuilder && task.status === 'todo' && updateData.builder && userAddress && userAddress === updateData.builder) {
+      await task.update({ ...updateData, builder: userAddress, status: 'inprogress' });
       res.status(200).json({ success: true, data: task, message: 'Task attributed to builder' });
       return;
     }

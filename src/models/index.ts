@@ -50,12 +50,14 @@ export {
 // Export a function to initialize all models
 export const initializeModels = async (): Promise<void> => {
   try {
-    // Sync all models
-    await sequelize.sync({ alter: true }); // Use alter: true in development
+    // Utilise alter: true seulement en développement
+    const alter = process.env.NODE_ENV === 'development';
+    await sequelize.sync({ alter });
     console.log('✅ All models synchronized successfully.');
   } catch (error) {
     console.error('❌ Error initializing models:', error);
-    throw error;
+    // Ne pas throw pour éviter le crash du serveur en dev
+    if (process.env.NODE_ENV !== 'development') throw error;
   }
 };
 

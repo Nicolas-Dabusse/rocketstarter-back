@@ -14,6 +14,7 @@ services:
       - "3000:3000"
     volumes:
       - .:/app
+      - ./data:/app/data
       - /app/node_modules
     networks:
       - rocketstarter-network
