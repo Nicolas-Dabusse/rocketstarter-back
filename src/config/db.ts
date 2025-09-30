@@ -1,9 +1,9 @@
 import { createSequelizeInstance } from '../utils/database';
 
-// Initialize Sequelize instance (now with SQLite)
+// Initialize Sequelize instance (using SQLite)
 export const sequelize = createSequelizeInstance();
 
-// Test database connection
+// Test the database connection
 export const testConnection = async (): Promise<boolean> => {
   try {
     await sequelize.authenticate();
@@ -15,7 +15,7 @@ export const testConnection = async (): Promise<boolean> => {
   }
 };
 
-// Sync database (create tables)
+// Synchronize the database (create tables)
 export const syncDatabase = async (force: boolean = false): Promise<void> => {
   try {
     await sequelize.sync({ force });
@@ -26,7 +26,7 @@ export const syncDatabase = async (force: boolean = false): Promise<void> => {
   }
 };
 
-// Close database connection
+// Close the database connection
 export const closeConnection = async (): Promise<void> => {
   try {
     await sequelize.close();

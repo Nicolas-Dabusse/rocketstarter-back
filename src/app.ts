@@ -20,18 +20,18 @@ app.use(router);
 
 app.use(errorHandler);
 
-// Initialize database and start server
+// Initialize database and start the server
 const startServer = async (): Promise<void> => {
   try {
-    // Test database connection
+    // Test the database connection
     console.log('🔍 Testing database connection...');
     await testConnection();
     
-    // Initialize models
+    // Initialize database models
     console.log('📊 Initializing database models...');
     await initializeModels();
     
-    // Start server
+    // Start the server
     app.listen(PORT, (): void => {
       console.log(`🚀 RocketStarter Backend running on port ${PORT}`);
       console.log(`📊 Health check: http://localhost:${PORT}/health`);

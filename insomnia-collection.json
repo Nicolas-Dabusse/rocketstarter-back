@@ -1,0 +1,655 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2025-09-30T00:00:00.000Z",
+  "__export_source": "insomnia.desktop.app:2024.5.0",
+  "resources": [
+    {
+      "_id": "req_health_check",
+      "parentId": "fld_health",
+      "modified": 1727654400000,
+      "created": 1727654400000,
+      "url": "{{ _.base_url }}/health",
+      "name": "Health Check",
+      "description": "Vérifier la santé de l'API",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_content_type"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1727654400000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_db_test",
+      "parentId": "fld_health",
+      "modified": 1727654400000,
+      "created": 1727654400000,
+      "url": "{{ _.base_url }}/db-test",
+      "name": "Database Test",
+      "description": "Tester la connexion à la base de données",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_content_type"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1727654390000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_api_info",
+      "parentId": "fld_health",
+      "modified": 1727654400000,
+      "created": 1727654400000,
+      "url": "{{ _.base_url }}/api/v1",
+      "name": "API Info",
+      "description": "Obtenir les informations de l'API",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_content_type"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1727654380000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_create_user",
+      "parentId": "fld_users",
+      "modified": 1727654400000,
+      "created": 1727654400000,
+      "url": "{{ _.base_url }}/api/v1/users",
+      "name": "Create User",
+      "description": "Créer un nouvel utilisateur",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"address\": \"0x1234567890abcdef1234567890abcdef12345678\",\n  \"role\": \"Owner\",\n  \"username\": \"john_doe\",\n  \"email\": \"john@example.com\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_content_type"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1727654370000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_create_builder",
+      "parentId": "fld_users",
+      "modified": 1727654400000,
+      "created": 1727654400000,
+      "url": "{{ _.base_url }}/api/v1/users",
+      "name": "Create Builder",
+      "description": "Créer un utilisateur Builder",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"address\": \"0xfedcba0987654321fedcba0987654321fedcba09\",\n  \"role\": \"Builder\",\n  \"username\": \"jane_builder\",\n  \"email\": \"jane@example.com\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_content_type"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1727654360000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_get_all_users",
+      "parentId": "fld_users",
+      "modified": 1727654400000,
+      "created": 1727654400000,
+      "url": "{{ _.base_url }}/api/v1/users",
+      "name": "Get All Users",
+      "description": "Récupérer tous les utilisateurs",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_content_type"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1727654350000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_get_user_by_address",
+      "parentId": "fld_users",
+      "modified": 1727654400000,
+      "created": 1727654400000,
+      "url": "{{ _.base_url }}/api/v1/users/0x1234567890abcdef1234567890abcdef12345678",
+      "name": "Get User by Address",
+      "description": "Récupérer un utilisateur par son adresse",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_content_type"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1727654340000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_update_user",
+      "parentId": "fld_users",
+      "modified": 1727654400000,
+      "created": 1727654400000,
+      "url": "{{ _.base_url }}/api/v1/users/0x1234567890abcdef1234567890abcdef12345678",
+      "name": "Update User",
+      "description": "Mettre à jour un utilisateur",
+      "method": "PUT",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"username\": \"john_doe_updated\",\n  \"email\": \"john.updated@example.com\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_content_type"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1727654330000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_delete_user",
+      "parentId": "fld_users",
+      "modified": 1727654400000,
+      "created": 1727654400000,
+      "url": "{{ _.base_url }}/api/v1/users/0x1234567890abcdef1234567890abcdef12345678",
+      "name": "Delete User",
+      "description": "Supprimer un utilisateur",
+      "method": "DELETE",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_content_type"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1727654320000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_create_project",
+      "parentId": "fld_projects",
+      "modified": 1727654400000,
+      "created": 1727654400000,
+      "url": "{{ _.base_url }}/api/v1/projects",
+      "name": "Create Project",
+      "description": "Créer un nouveau projet",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"DeFi Protocol\",\n  \"description\": \"Un protocole DeFi révolutionnaire\",\n  \"owner\": \"0x1234567890abcdef1234567890abcdef12345678\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_content_type"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1727654310000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_get_all_projects",
+      "parentId": "fld_projects",
+      "modified": 1727654400000,
+      "created": 1727654400000,
+      "url": "{{ _.base_url }}/api/v1/projects",
+      "name": "Get All Projects",
+      "description": "Récupérer tous les projets",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_content_type"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1727654300000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_get_project_by_id",
+      "parentId": "fld_projects",
+      "modified": 1727654400000,
+      "created": 1727654400000,
+      "url": "{{ _.base_url }}/api/v1/projects/project-id-example",
+      "name": "Get Project by ID",
+      "description": "Récupérer un projet par son ID",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_content_type"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1727654290000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_update_project",
+      "parentId": "fld_projects",
+      "modified": 1727654400000,
+      "created": 1727654400000,
+      "url": "{{ _.base_url }}/api/v1/projects/project-id-example",
+      "name": "Update Project",
+      "description": "Mettre à jour un projet",
+      "method": "PUT",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"DeFi Protocol v2\",\n  \"description\": \"Un protocole DeFi révolutionnaire mis à jour\",\n  \"progress\": 25.5\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_content_type"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1727654280000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_delete_project",
+      "parentId": "fld_projects",
+      "modified": 1727654400000,
+      "created": 1727654400000,
+      "url": "{{ _.base_url }}/api/v1/projects/project-id-example",
+      "name": "Delete Project",
+      "description": "Supprimer un projet",
+      "method": "DELETE",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_content_type"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1727654270000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_create_task",
+      "parentId": "fld_tasks",
+      "modified": 1727654400000,
+      "created": 1727654400000,
+      "url": "{{ _.base_url }}/api/v1/tasks",
+      "name": "Create Task",
+      "description": "Créer une nouvelle tâche",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"projectId\": \"project-id-example\",\n  \"title\": \"Implémenter le smart contract\",\n  \"description\": \"Développer et déployer le smart contract principal\",\n  \"link\": \"https://github.com/example/repo\",\n  \"builder\": \"0xfedcba0987654321fedcba0987654321fedcba09\",\n  \"effort\": \"5 jours\",\n  \"priority\": \"high\",\n  \"status\": \"todo\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_content_type"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1727654260000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_get_all_tasks",
+      "parentId": "fld_tasks",
+      "modified": 1727654400000,
+      "created": 1727654400000,
+      "url": "{{ _.base_url }}/api/v1/tasks",
+      "name": "Get All Tasks",
+      "description": "Récupérer toutes les tâches",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_content_type"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1727654250000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_get_task_by_id",
+      "parentId": "fld_tasks",
+      "modified": 1727654400000,
+      "created": 1727654400000,
+      "url": "{{ _.base_url }}/api/v1/tasks/task-id-example",
+      "name": "Get Task by ID",
+      "description": "Récupérer une tâche par son ID",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_content_type"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1727654240000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_update_task",
+      "parentId": "fld_tasks",
+      "modified": 1727654400000,
+      "created": 1727654400000,
+      "url": "{{ _.base_url }}/api/v1/tasks/task-id-example",
+      "name": "Update Task",
+      "description": "Mettre à jour une tâche",
+      "method": "PUT",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"title\": \"Implémenter et tester le smart contract\",\n  \"description\": \"Développer, tester et déployer le smart contract principal\",\n  \"priority\": \"medium\",\n  \"status\": \"inprogress\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_content_type"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1727654230000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_delete_task",
+      "parentId": "fld_tasks",
+      "modified": 1727654400000,
+      "created": 1727654400000,
+      "url": "{{ _.base_url }}/api/v1/tasks/task-id-example",
+      "name": "Delete Task",
+      "description": "Supprimer une tâche",
+      "method": "DELETE",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_content_type"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1727654220000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "fld_health",
+      "parentId": "wrk_main",
+      "modified": 1727654400000,
+      "created": 1727654400000,
+      "name": "🏥 Health & Info",
+      "description": "Endpoints pour vérifier la santé de l'API",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1727654400000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "fld_users",
+      "parentId": "wrk_main",
+      "modified": 1727654400000,
+      "created": 1727654400000,
+      "name": "👥 Users",
+      "description": "Gestion des utilisateurs (Owners et Builders)",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1727654390000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "fld_projects",
+      "parentId": "wrk_main",
+      "modified": 1727654400000,
+      "created": 1727654400000,
+      "name": "🚀 Projects",
+      "description": "Gestion des projets",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1727654380000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "fld_tasks",
+      "parentId": "wrk_main",
+      "modified": 1727654400000,
+      "created": 1727654400000,
+      "name": "📋 Tasks",
+      "description": "Gestion des tâches",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1727654370000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "wrk_main",
+      "parentId": null,
+      "modified": 1727654400000,
+      "created": 1727654400000,
+      "name": "RocketStarter API",
+      "description": "Collection complète pour tester l'API RocketStarter",
+      "scope": "collection",
+      "_type": "workspace"
+    },
+    {
+      "_id": "env_base",
+      "parentId": "wrk_main",
+      "modified": 1727654400000,
+      "created": 1727654400000,
+      "name": "Base Environment",
+      "data": {
+        "base_url": "http://localhost:3000"
+      },
+      "dataPropertyOrder": {
+        "&": ["base_url"]
+      },
+      "color": null,
+      "isPrivate": false,
+      "metaSortKey": 1727654400000,
+      "_type": "environment"
+    }
+  ]
+}

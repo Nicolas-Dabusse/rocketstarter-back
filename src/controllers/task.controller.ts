@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { Task, Project, User } from '../models';
+import { Task, Project, User, Category } from '../models';
 import { CreateTaskRequest, UpdateTaskRequest } from '../types';
 
-// Créer une tâche (statut par défaut todo)
+// Create a task (default status: todo)
 export const createTask = async (req: Request, res: Response): Promise<void> => {
   try {
     const taskData: CreateTaskRequest = req.body;
@@ -18,7 +18,7 @@ export const createTask = async (req: Request, res: Response): Promise<void> => 
   }
 };
 
-// Lister toutes les tâches (filtrage possible)
+// List all tasks (with optional filters)
 export const getAllTasks = async (req: Request, res: Response): Promise<void> => {
   try {
     const { status, builder, projectId } = req.query;
@@ -33,7 +33,7 @@ export const getAllTasks = async (req: Request, res: Response): Promise<void> =>
   }
 };
 
-// Détail d'une tâche
+// Get details of a task
 export const getTaskById = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
@@ -48,7 +48,7 @@ export const getTaskById = async (req: Request, res: Response): Promise<void> =>
   }
 };
 
-// Modifier une tâche (builder ou owner)
+// Update a task (only builder or project owner)
 export const updateTask = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
@@ -62,7 +62,7 @@ export const updateTask = async (req: Request, res: Response): Promise<void> => 
     const userAddress = req.headers['x-user-address'] as string | undefined;
 
 
-    // Cas 1 : la tâche n'a pas de builder (null, undefined ou string vide) ET est en 'todo', on autorise l'utilisateur à s'auto-attribuer la tâche
+    // Case 1: The task has no builder and is 'todo', allow user to self-assign
     const noBuilder = !task.builder || task.builder === null || typeof task.builder === 'undefined' || task.builder === '';
     if (noBuilder && task.status === 'todo' && updateData.builder && userAddress && userAddress === updateData.builder) {
       await task.update({ ...updateData, builder: userAddress, status: 'inprogress' });
@@ -70,7 +70,7 @@ export const updateTask = async (req: Request, res: Response): Promise<void> => 
       return;
     }
 
-    // Cas 2 : la tâche a déjà un builder, seul ce builder ou le owner du projet peut modifier
+    // Case 2: The task already has a builder, only builder or project owner can update
     if (userAddress && userAddress !== task.builder && userAddress !== project?.owner) {
       res.status(403).json({ success: false, error: 'Forbidden: only builder or owner can update' });
       return;
@@ -83,7 +83,7 @@ export const updateTask = async (req: Request, res: Response): Promise<void> => 
   }
 };
 
-// Supprimer une tâche (seulement owner du projet)
+// Delete a task (only project owner)
 export const deleteTask = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
@@ -100,6 +100,77 @@ export const deleteTask = async (req: Request, res: Response): Promise<void> => 
     }
     await task.destroy();
     res.status(200).json({ success: true, message: 'Task deleted' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' });
+  }
+};
+
+// Get categories of a task
+export const getTaskCategories = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const task = await Task.findByPk(id);
+    if (!task) {
+      res.status(404).json({ success: false, error: 'Task not found' });
+      return;
+    }
+    const categories = await task.getCategories();
+    res.status(200).json({ success: true, data: categories });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' });
+  }
+};
+
+// Add a category to a task (only project owner)
+export const addCategoryToTask = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const { categoryId } = req.body;
+    const userAddress = req.headers['x-user-address'] as string | undefined;
+    const task = await Task.findByPk(id);
+    if (!task) {
+      res.status(404).json({ success: false, error: 'Task not found' });
+      return;
+    }
+    const project = await Project.findByPk(task.projectId);
+    if (!userAddress || userAddress !== project?.owner) {
+      res.status(403).json({ success: false, error: 'Forbidden: only project owner can add category' });
+      return;
+    }
+    const category = await Category.findByPk(categoryId);
+    if (!category) {
+      res.status(404).json({ success: false, error: 'Category not found' });
+      return;
+    }
+    await task.addCategory(category);
+    res.status(200).json({ success: true, message: 'Category added to task' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' });
+  }
+};
+
+// Remove a category from a task (only project owner)
+export const removeCategoryFromTask = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id, categoryId } = req.params;
+    const userAddress = req.headers['x-user-address'] as string | undefined;
+    const task = await Task.findByPk(id);
+    if (!task) {
+      res.status(404).json({ success: false, error: 'Task not found' });
+      return;
+    }
+    const project = await Project.findByPk(task.projectId);
+    if (!userAddress || userAddress !== project?.owner) {
+      res.status(403).json({ success: false, error: 'Forbidden: only project owner can remove category' });
+      return;
+    }
+    const category = await Category.findByPk(categoryId);
+    if (!category) {
+      res.status(404).json({ success: false, error: 'Category not found' });
+      return;
+    }
+    await task.removeCategory(category);
+    res.status(200).json({ success: true, message: 'Category removed from task' });
   } catch (error) {
     res.status(500).json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' });
   }
