@@ -1,8 +1,10 @@
-import { DataTypes, Model, Optional } from 'sequelize';
+import { DataTypes, Model, Optional, BelongsToManyGetAssociationsMixin, BelongsToManyAddAssociationMixin, BelongsToManyRemoveAssociationMixin } from 'sequelize';
+import type { Sequelize } from 'sequelize';
 import { sequelize } from '../config/db';
 import { Task as ITask, TaskPriority, TaskStatus } from '../types';
 import Project from './Project';
 import User from './User';
+import Category from './Category';
 
 // Define the attributes for creation (optional fields)
 interface TaskCreationAttributes extends Optional<ITask, 'createdAt' | 'updatedAt' | 'status' | 'description' | 'link' | 'builder' | 'effort' | 'priority'> {}
@@ -20,6 +22,11 @@ class Task extends Model<ITask, TaskCreationAttributes> implements ITask {
   public effort?: string;
   public priority?: TaskPriority;
   public status!: TaskStatus;
+
+  // Sequelize association mixins for Category
+  public getCategories!: BelongsToManyGetAssociationsMixin<Category>;
+  public addCategory!: BelongsToManyAddAssociationMixin<Category, string>;
+  public removeCategory!: BelongsToManyRemoveAssociationMixin<Category, string>;
 }
 
 // Initialize the model
