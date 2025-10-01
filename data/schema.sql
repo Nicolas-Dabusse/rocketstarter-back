@@ -1,11 +1,11 @@
 -- Table: Reward
 CREATE TABLE "Reward" (
-  id VARCHAR(255) PRIMARY KEY,
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
   type VARCHAR(50) NOT NULL, -- ex: token, nft, free, btc, eth, custom, etc.
   value VARCHAR(255) NOT NULL, -- montant, id NFT, description, etc.
   contractAddress VARCHAR(255), -- optionnel, pour token/NFT
   details TEXT, -- optionnel, infos complémentaires
-  taskId VARCHAR(255) NOT NULL,
+  taskId INTEGER NOT NULL,
   createdAt TIMESTAMP NOT NULL DEFAULT NOW(),
   CONSTRAINT fk_reward_task FOREIGN KEY (taskId) REFERENCES "Task"(id)
 );
@@ -20,7 +20,7 @@ CREATE TABLE "User" (
 
 -- Table: Project
 CREATE TABLE "Project" (
-  id VARCHAR(255) PRIMARY KEY,
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
   name VARCHAR(255) NOT NULL,
   progress NUMERIC(5,2) DEFAULT 0,       -- number, could be percentage
   description TEXT,
@@ -32,8 +32,8 @@ CREATE TABLE "Project" (
 
 -- Table: Task
 CREATE TABLE "Task" (
-  id VARCHAR(255) PRIMARY KEY,
-  projectId VARCHAR(255) NOT NULL,
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  projectId INTEGER NOT NULL,
   title VARCHAR(255) NOT NULL,
   description TEXT,
   link VARCHAR(512),
@@ -51,14 +51,14 @@ CREATE TABLE "Task" (
 
 -- Table: Category
 CREATE TABLE "Category" (
-  id VARCHAR(255) PRIMARY KEY,
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
   name VARCHAR(255) NOT NULL
 );
 
 -- Project <-> Category (Many-to-Many)
 CREATE TABLE "ProjectCategory" (
-  projectId VARCHAR(255) NOT NULL,
-  categoryId VARCHAR(255) NOT NULL,
+  projectId INTEGER NOT NULL,
+  categoryId INTEGER NOT NULL,
   PRIMARY KEY (projectId, categoryId),
   FOREIGN KEY (projectId) REFERENCES "Project"(id),
   FOREIGN KEY (categoryId) REFERENCES "Category"(id)
@@ -66,8 +66,8 @@ CREATE TABLE "ProjectCategory" (
 
 -- Task <-> Category (Many-to-Many)
 CREATE TABLE "TaskCategory" (
-  taskId VARCHAR(255) NOT NULL,
-  categoryId VARCHAR(255) NOT NULL,
+  taskId INTEGER NOT NULL,
+  categoryId INTEGER NOT NULL,
   PRIMARY KEY (taskId, categoryId),
   FOREIGN KEY (taskId) REFERENCES "Task"(id),
   FOREIGN KEY (categoryId) REFERENCES "Category"(id)
