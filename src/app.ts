@@ -55,9 +55,12 @@ app.use((req, res, next) => {
 // Request logging middleware for development
 if (process.env.NODE_ENV === 'development') {
   app.use((req, res, next) => {
-    console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
-    if (req.headers['x-user-address']) {
-      console.log(`  → User: ${req.headers['x-user-address']}`);
+    // Skip logging health checks to reduce noise
+    if (req.path !== '/health') {
+      console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+      if (req.headers['x-user-address']) {
+        console.log(`  → User: ${req.headers['x-user-address']}`);
+      }
     }
     next();
   });
