@@ -12,9 +12,56 @@ dotenv.config();
 const app: Application = express();
 const PORT: number = parseInt(process.env.PORT || '3000', 10);
 
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// CORS configuration for React development
+const getAllowedOrigins = (): string[] => {
+  const envOrigins = process.env.ALLOWED_ORIGINS;
+  const defaultOrigins = [
+    'http://localhost:3000',    // React default port
+    'http://localhost:3001',    // Alternative React port
+    'http://localhost:5173',    // Vite default port
+    'http://localhost:4173',    // Vite preview port
+    'http://localhost:8080',    // Alternative development port
+    'http://127.0.0.1:3000',    // Localhost alternative
+    'http://127.0.0.1:3001',
+    'http://127.0.0.1:5173',
+  ];
+  
+  if (envOrigins) {
+    return envOrigins.split(',').map(origin => origin.trim());
+  }
+  
+  return defaultOrigins;
+};
+
+const corsOptions = {
+  origin: getAllowedOrigins(),
+  credentials: true,
+  optionsSuccessStatus: 200,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-user-address', 'Cache-Control'],
+};
+
+app.use(cors(corsOptions));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Security headers for development
+app.use((req, res, next) => {
+  res.header('X-Powered-By', 'RocketStarter-Backend');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  next();
+});
+
+// Request logging middleware for development
+if (process.env.NODE_ENV === 'development') {
+  app.use((req, res, next) => {
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+    if (req.headers['x-user-address']) {
+      console.log(`  → User: ${req.headers['x-user-address']}`);
+    }
+    next();
+  });
+}
 
 app.use(router);
 

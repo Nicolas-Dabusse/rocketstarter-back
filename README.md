@@ -25,6 +25,8 @@ Before running this project, make sure you have installed:
 
 **Note**: This project uses SQLite for the database, so no additional database setup is required!
 
+**🎯 For Frontend Developers**: See [FRONTEND_INTEGRATION.md](./FRONTEND_INTEGRATION.md) for detailed integration guide with React/Vue/Angular.
+
 ## 🛠️ Installation
 
 1. **Clone the repository**
@@ -163,9 +165,15 @@ npm run test:integration
 
 ## 📖 API Documentation
 
+### 🎯 For Frontend Developers
+1. **CORS is pre-configured** for common development ports (3000, 5173, 8080, etc.)
+2. **Quick Test**: Open `cors-test.html` in your browser to test the API
+3. **Detailed Guide**: See [FRONTEND_INTEGRATION.md](./FRONTEND_INTEGRATION.md)
+
 ### Base Endpoints
 - **Health Check**: `GET http://localhost:3000/health`
 - **API Info**: `GET http://localhost:3000/api/v1`
+- **CORS Test Page**: Open `cors-test.html` in browser
 
 ### Main API Routes
 

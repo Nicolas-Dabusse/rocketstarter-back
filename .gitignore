@@ -1,2 +1,4 @@
 node_modules/
 .env
+FRONTEND_INTEGRATION.md
+cors-test.html
