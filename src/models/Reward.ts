@@ -3,34 +3,34 @@ import { sequelize } from '../config/db';
 import Task from './Task';
 
 export interface RewardAttributes {
-  id: string;
+  id: number;
   type: string;
   value: string;
   contractAddress?: string;
   details?: string;
-  taskId: string;
+  taskId: number;
   createdAt?: Date;
 }
 
 interface RewardCreationAttributes extends Optional<RewardAttributes, 'id' | 'contractAddress' | 'details' | 'createdAt'> {}
 
 class Reward extends Model<RewardAttributes, RewardCreationAttributes> implements RewardAttributes {
-  public id!: string;
+  public id!: number;
   public type!: string;
   public value!: string;
   public contractAddress?: string;
   public details?: string;
-  public taskId!: string;
+  public taskId!: number;
   public createdAt!: Date;
 }
 
 Reward.init(
   {
     id: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.INTEGER,
       primaryKey: true,
+      autoIncrement: true,
       allowNull: false,
-      defaultValue: () => `reward_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     },
     type: {
       type: DataTypes.STRING(50),
@@ -49,7 +49,7 @@ Reward.init(
       allowNull: true,
     },
     taskId: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: Task,

@@ -6,13 +6,13 @@ import Project from './Project';
 import User from './User';
 import Category from './Category';
 
-// Define the attributes for creation (optional fields)
-interface TaskCreationAttributes extends Optional<ITask, 'createdAt' | 'updatedAt' | 'status' | 'description' | 'link' | 'builder' | 'effort' | 'priority'> {}
+// Define the attributes for creation (optional fields, id is auto-generated)
+interface TaskCreationAttributes extends Optional<ITask, 'id' | 'createdAt' | 'updatedAt' | 'status' | 'description' | 'link' | 'builder' | 'effort' | 'priority'> {}
 
 // Define the Task model class
 class Task extends Model<ITask, TaskCreationAttributes> implements ITask {
-  public id!: string;
-  public projectId!: string;
+  public id!: number;
+  public projectId!: number;
   public title!: string;
   public description?: string;
   public link?: string;
@@ -25,20 +25,21 @@ class Task extends Model<ITask, TaskCreationAttributes> implements ITask {
 
   // Sequelize association mixins for Category
   public getCategories!: BelongsToManyGetAssociationsMixin<Category>;
-  public addCategory!: BelongsToManyAddAssociationMixin<Category, string>;
-  public removeCategory!: BelongsToManyRemoveAssociationMixin<Category, string>;
+  public addCategory!: BelongsToManyAddAssociationMixin<Category, number>;
+  public removeCategory!: BelongsToManyRemoveAssociationMixin<Category, number>;
 }
 
 // Initialize the model
 Task.init(
   {
     id: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.INTEGER,
       primaryKey: true,
+      autoIncrement: true,
       allowNull: false,
     },
     projectId: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: Project,

@@ -3,12 +3,12 @@ import { sequelize } from '../config/db';
 import { Project as IProject } from '../types';
 import User from './User';
 
-// Define the attributes for creation (optional fields)
-interface ProjectCreationAttributes extends Optional<IProject, 'createdAt' | 'updatedAt' | 'progress'> {}
+// Define the attributes for creation (optional fields, id is auto-generated)
+interface ProjectCreationAttributes extends Optional<IProject, 'id' | 'createdAt' | 'updatedAt' | 'progress'> {}
 
 // Define the Project model class
 class Project extends Model<IProject, ProjectCreationAttributes> implements IProject {
-  public id!: string;
+  public id!: number;
   public name!: string;
   public progress!: number;
   public description?: string;
@@ -21,8 +21,9 @@ class Project extends Model<IProject, ProjectCreationAttributes> implements IPro
 Project.init(
   {
     id: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.INTEGER,
       primaryKey: true,
+      autoIncrement: true,
       allowNull: false,
     },
     name: {

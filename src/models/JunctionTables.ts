@@ -3,19 +3,19 @@ import { sequelize } from '../config/db';
 
 // Modèle pour la table de jointure ProjectCategory
 class ProjectCategory extends Model {
-  public projectId!: string;
-  public categoryId!: string;
+  public projectId!: number;
+  public categoryId!: number;
 }
 
 ProjectCategory.init(
   {
     projectId: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
     },
     categoryId: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
     },
@@ -30,19 +30,19 @@ ProjectCategory.init(
 
 // Modèle pour la table de jointure TaskCategory
 class TaskCategory extends Model {
-  public taskId!: string;
-  public categoryId!: string;
+  public taskId!: number;
+  public categoryId!: number;
 }
 
 TaskCategory.init(
   {
     taskId: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
     },
     categoryId: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
     },

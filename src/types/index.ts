@@ -22,7 +22,7 @@ export interface UpdateUserRequest {
 
 // Project types
 export interface Project {
-  id: string;
+  id: number;
   name: string;
   progress: number; // percentage 0-100
   description?: string;
@@ -62,8 +62,8 @@ export const TaskStatusLabel: Record<TaskStatus, string> = {
 };
 
 export interface Task {
-  id: string;
-  projectId: string;
+  id: number;
+  projectId: number;
   title: string;
   description?: string;
   link?: string;
@@ -76,7 +76,7 @@ export interface Task {
 }
 
 export interface CreateTaskRequest {
-  projectId: string;
+  projectId: number;
   title: string;
   description?: string;
   link?: string;
@@ -98,7 +98,7 @@ export interface UpdateTaskRequest {
 
 // Category types
 export interface Category {
-  id: string;
+  id: number;
   name: string;
 }
 

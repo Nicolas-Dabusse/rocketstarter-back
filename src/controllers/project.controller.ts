@@ -6,11 +6,8 @@ export const createProject = async (req: Request, res: Response): Promise<void> 
   try {
     const projectData: CreateProjectRequest = req.body;
     
-    // Generate a unique ID for the project
-    const projectId = `project_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
+    // Create project (id will be auto-generated as INTEGER AUTOINCREMENT)
     const project = await Project.create({
-      id: projectId,
       ...projectData
     });
     
@@ -61,7 +58,25 @@ export const getProjectById = async (req: Request, res: Response): Promise<void>
   try {
     const { id } = req.params;
     
-    const project = await Project.findByPk(id, {
+    if (!id) {
+      res.status(400).json({
+        success: false,
+        error: 'Project ID is required'
+      });
+      return;
+    }
+    
+    const projectId = parseInt(id, 10);
+    
+    if (isNaN(projectId)) {
+      res.status(400).json({
+        success: false,
+        error: 'Invalid project ID'
+      });
+      return;
+    }
+    
+    const project = await Project.findByPk(projectId, {
       include: [
         {
           model: User,
@@ -108,8 +123,26 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
     const { id } = req.params;
     const updateData: UpdateProjectRequest = req.body;
     
+    if (!id) {
+      res.status(400).json({
+        success: false,
+        error: 'Project ID is required'
+      });
+      return;
+    }
+    
+    const projectId = parseInt(id, 10);
+    
+    if (isNaN(projectId)) {
+      res.status(400).json({
+        success: false,
+        error: 'Invalid project ID'
+      });
+      return;
+    }
+    
     const [updatedRowsCount] = await Project.update(updateData, {
-      where: { id }
+      where: { id: projectId }
     });
     
     if (updatedRowsCount === 0) {
@@ -148,7 +181,26 @@ export const deleteProject = async (req: Request, res: Response): Promise<void> 
   try {
     const { id } = req.params;
     const userAddress = req.headers['x-user-address'] as string | undefined;
-    const project = await Project.findByPk(id);
+    
+    if (!id) {
+      res.status(400).json({
+        success: false,
+        error: 'Project ID is required'
+      });
+      return;
+    }
+    
+    const projectId = parseInt(id, 10);
+    
+    if (isNaN(projectId)) {
+      res.status(400).json({
+        success: false,
+        error: 'Invalid project ID'
+      });
+      return;
+    }
+    
+    const project = await Project.findByPk(projectId);
     if (!project) {
       res.status(404).json({ success: false, error: 'Project not found' });
       return;

@@ -7,15 +7,14 @@ export const createTask = async (req: Request, res: Response): Promise<void> => 
   try {
     const taskData: CreateTaskRequest = req.body;
     const userAddress = req.headers['x-user-address'] as string | undefined;
-    // Autoriser la création par builder ou owner (pas de restriction ici)
-    const taskId = `task_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    // Create task (id will be auto-generated as INTEGER AUTOINCREMENT)
     // Par défaut status = 0 (todo), priority = 1 (medium)
-      const task = await Task.create({
-        id: taskId,
-        ...taskData,
-        status: typeof taskData.status === 'number' ? taskData.status : 0,
-        priority: typeof taskData.priority === 'number' ? taskData.priority : 1,
-        builder: typeof taskData.builder === 'string' ? taskData.builder : undefined,
+    const task = await Task.create({
+      ...taskData,
+      status: typeof taskData.status === 'number' ? taskData.status : 0,
+      priority: typeof taskData.priority === 'number' ? taskData.priority : 1,
+      builder: typeof taskData.builder === 'string' ? taskData.builder : undefined,
     });
     res.status(201).json({ success: true, data: task, message: 'Task created' });
   } catch (error) {
@@ -42,7 +41,26 @@ export const getAllTasks = async (req: Request, res: Response): Promise<void> =>
 export const getTaskById = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const task = await Task.findByPk(id);
+    
+    if (!id) {
+      res.status(400).json({
+        success: false,
+        error: 'Task ID is required'
+      });
+      return;
+    }
+    
+    const taskId = parseInt(id, 10);
+    
+    if (isNaN(taskId)) {
+      res.status(400).json({
+        success: false,
+        error: 'Invalid task ID'
+      });
+      return;
+    }
+    
+    const task = await Task.findByPk(taskId);
     if (!task) {
       res.status(404).json({ success: false, error: 'Task not found' });
       return;
@@ -58,7 +76,26 @@ export const updateTask = async (req: Request, res: Response): Promise<void> => 
   try {
     const { id } = req.params;
     const updateData: UpdateTaskRequest = req.body;
-    const task = await Task.findByPk(id);
+    
+    if (!id) {
+      res.status(400).json({
+        success: false,
+        error: 'Task ID is required'
+      });
+      return;
+    }
+    
+    const taskId = parseInt(id, 10);
+    
+    if (isNaN(taskId)) {
+      res.status(400).json({
+        success: false,
+        error: 'Invalid task ID'
+      });
+      return;
+    }
+    
+    const task = await Task.findByPk(taskId);
     if (!task) {
       res.status(404).json({ success: false, error: 'Task not found' });
       return;
@@ -112,7 +149,26 @@ export const updateTask = async (req: Request, res: Response): Promise<void> => 
 export const deleteTask = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const task = await Task.findByPk(id);
+    
+    if (!id) {
+      res.status(400).json({
+        success: false,
+        error: 'Task ID is required'
+      });
+      return;
+    }
+    
+    const taskId = parseInt(id, 10);
+    
+    if (isNaN(taskId)) {
+      res.status(400).json({
+        success: false,
+        error: 'Invalid task ID'
+      });
+      return;
+    }
+    
+    const task = await Task.findByPk(taskId);
     if (!task) {
       res.status(404).json({ success: false, error: 'Task not found' });
       return;

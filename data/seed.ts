@@ -1,12 +1,9 @@
 import dotenv from "dotenv";
-import { createSequelizeInstance } from '../src/utils/database';
 import * as fs from 'fs';
 import * as path from 'path';
+import { sequelize } from '../src/config/db';
 
 dotenv.config();
-
-// Connexion SQLite (même config que l'app)
-const sequelize = createSequelizeInstance();
 
 // S'assurer que le dossier data existe
 const dataDir = path.join(__dirname);
@@ -19,11 +16,12 @@ async function seed() {
     await sequelize.authenticate();
     console.log("✅ SQLite database connected");
 
-    // Synchroniser les modèles (créer les tables si elles n'existent pas)
-    await sequelize.sync({ force: false });
+    // Importer les modèles et la fonction d'initialisation
+    const { User, Project, Task, Category, Reward, initializeModels } = require('../src/models');
 
-    // Importer les modèles
-    const { User, Project, Task, Category, Reward } = require('../src/models');
+    // Forcer la recréation des tables avec la nouvelle structure
+    await sequelize.sync({ force: true });
+    console.log("🗂️ Database tables recreated with new structure");
 
     // Users
     await User.findOrCreate({

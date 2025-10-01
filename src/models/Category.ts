@@ -2,12 +2,12 @@ import { DataTypes, Model, Optional } from 'sequelize';
 import { sequelize } from '../config/db';
 import { Category as ICategory } from '../types';
 
-// Define the attributes for creation (no optional fields for Category)
-interface CategoryCreationAttributes extends ICategory {}
+// Define the attributes for creation (id is auto-generated)
+interface CategoryCreationAttributes extends Optional<ICategory, 'id'> {}
 
 // Define the Category model class
 class Category extends Model<ICategory, CategoryCreationAttributes> implements ICategory {
-  public id!: string;
+  public id!: number;
   public name!: string;
 }
 
@@ -15,8 +15,9 @@ class Category extends Model<ICategory, CategoryCreationAttributes> implements I
 Category.init(
   {
     id: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.INTEGER,
       primaryKey: true,
+      autoIncrement: true,
       allowNull: false,
     },
     name: {
