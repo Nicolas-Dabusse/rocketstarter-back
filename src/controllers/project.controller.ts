@@ -147,28 +147,20 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
 export const deleteProject = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    
-    const deletedRowsCount = await Project.destroy({
-      where: { id }
-    });
-    
-    if (deletedRowsCount === 0) {
-      res.status(404).json({
-        success: false,
-        error: 'Project not found'
-      });
+    const userAddress = req.headers['x-user-address'] as string | undefined;
+    const project = await Project.findByPk(id);
+    if (!project) {
+      res.status(404).json({ success: false, error: 'Project not found' });
       return;
     }
-    
-    res.status(200).json({
-      success: true,
-      message: 'Project deleted successfully'
-    });
+    if (!userAddress || userAddress !== project.owner) {
+      res.status(403).json({ success: false, error: 'Forbidden: only project owner can delete' });
+      return;
+    }
+    await project.destroy();
+    res.status(200).json({ success: true, message: 'Project deleted successfully' });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    res.status(500).json({
-      success: false,
-      error: errorMessage
-    });
+    res.status(500).json({ success: false, error: errorMessage });
   }
 };

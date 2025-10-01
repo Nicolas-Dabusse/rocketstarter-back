@@ -6,11 +6,16 @@ import { CreateTaskRequest, UpdateTaskRequest } from '../types';
 export const createTask = async (req: Request, res: Response): Promise<void> => {
   try {
     const taskData: CreateTaskRequest = req.body;
+    const userAddress = req.headers['x-user-address'] as string | undefined;
+    // Autoriser la création par builder ou owner (pas de restriction ici)
     const taskId = `task_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    const task = await Task.create({
-      id: taskId,
-      ...taskData,
-      status: 'todo',
+    // Par défaut status = 0 (todo), priority = 1 (medium)
+      const task = await Task.create({
+        id: taskId,
+        ...taskData,
+        status: typeof taskData.status === 'number' ? taskData.status : 0,
+        priority: typeof taskData.priority === 'number' ? taskData.priority : 1,
+        builder: typeof taskData.builder === 'string' ? taskData.builder : undefined,
     });
     res.status(201).json({ success: true, data: task, message: 'Task created' });
   } catch (error) {
@@ -62,22 +67,42 @@ export const updateTask = async (req: Request, res: Response): Promise<void> => 
     const userAddress = req.headers['x-user-address'] as string | undefined;
 
 
-    // Case 1: The task has no builder and is 'todo', allow user to self-assign
-    const noBuilder = !task.builder || task.builder === null || typeof task.builder === 'undefined' || task.builder === '';
-    if (noBuilder && task.status === 'todo' && updateData.builder && userAddress && userAddress === updateData.builder) {
-      await task.update({ ...updateData, builder: userAddress, status: 'inprogress' });
+    // Nouveau workflow Kanban
+    // status: 0=todo, 1=inprogress, 2=inreview, 3=done
+    // priority: 0=low, 1=medium, 2=high
+    const noBuilder = !task.builder || typeof task.builder === 'undefined' || task.builder === '';
+    const status = typeof updateData.status === 'number' ? updateData.status : task.status;
+    // Attribution (todo -> inprogress)
+    if (noBuilder && task.status === 0 && updateData.builder && userAddress && userAddress === updateData.builder && status === 1) {
+      await task.update({ ...updateData, builder: userAddress, status: 1 });
       res.status(200).json({ success: true, data: task, message: 'Task attributed to builder' });
       return;
     }
-
-    // Case 2: The task already has a builder, only builder or project owner can update
-    if (userAddress && userAddress !== task.builder && userAddress !== project?.owner) {
-      res.status(403).json({ success: false, error: 'Forbidden: only builder or owner can update' });
+    // Relâcher la tâche (inprogress -> todo)
+    if (task.status === 1 && status === 0 && userAddress && userAddress === task.builder) {
+      await task.update({ ...updateData, builder: undefined, status: 0 });
+      res.status(200).json({ success: true, data: task, message: 'Task released to todo' });
       return;
     }
-
-    await task.update(updateData);
-    res.status(200).json({ success: true, data: task, message: 'Task updated' });
+    // Demander une review (inprogress -> inreview)
+    if (task.status === 1 && status === 2 && userAddress && userAddress === task.builder) {
+      await task.update({ ...updateData, status: 2 });
+      res.status(200).json({ success: true, data: task, message: 'Task sent to review' });
+      return;
+    }
+    // Passer en done (inreview -> done) : seul owner ou créateur
+    if (task.status === 2 && status === 3 && userAddress && (userAddress === project?.owner || userAddress === task.builder)) {
+      await task.update({ ...updateData, status: 3 });
+      res.status(200).json({ success: true, data: task, message: 'Task marked as done' });
+      return;
+    }
+    // Modification générique : seul owner ou créateur
+    if (userAddress && (userAddress === project?.owner || userAddress === task.builder)) {
+      await task.update(updateData);
+      res.status(200).json({ success: true, data: task, message: 'Task updated' });
+      return;
+    }
+    res.status(403).json({ success: false, error: 'Forbidden: not allowed to update this task' });
   } catch (error) {
     res.status(400).json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' });
   }
@@ -105,73 +130,3 @@ export const deleteTask = async (req: Request, res: Response): Promise<void> => 
   }
 };
 
-// Get categories of a task
-export const getTaskCategories = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { id } = req.params;
-    const task = await Task.findByPk(id);
-    if (!task) {
-      res.status(404).json({ success: false, error: 'Task not found' });
-      return;
-    }
-    const categories = await task.getCategories();
-    res.status(200).json({ success: true, data: categories });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' });
-  }
-};
-
-// Add a category to a task (only project owner)
-export const addCategoryToTask = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { id } = req.params;
-    const { categoryId } = req.body;
-    const userAddress = req.headers['x-user-address'] as string | undefined;
-    const task = await Task.findByPk(id);
-    if (!task) {
-      res.status(404).json({ success: false, error: 'Task not found' });
-      return;
-    }
-    const project = await Project.findByPk(task.projectId);
-    if (!userAddress || userAddress !== project?.owner) {
-      res.status(403).json({ success: false, error: 'Forbidden: only project owner can add category' });
-      return;
-    }
-    const category = await Category.findByPk(categoryId);
-    if (!category) {
-      res.status(404).json({ success: false, error: 'Category not found' });
-      return;
-    }
-    await task.addCategory(category);
-    res.status(200).json({ success: true, message: 'Category added to task' });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' });
-  }
-};
-
-// Remove a category from a task (only project owner)
-export const removeCategoryFromTask = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { id, categoryId } = req.params;
-    const userAddress = req.headers['x-user-address'] as string | undefined;
-    const task = await Task.findByPk(id);
-    if (!task) {
-      res.status(404).json({ success: false, error: 'Task not found' });
-      return;
-    }
-    const project = await Project.findByPk(task.projectId);
-    if (!userAddress || userAddress !== project?.owner) {
-      res.status(403).json({ success: false, error: 'Forbidden: only project owner can remove category' });
-      return;
-    }
-    const category = await Category.findByPk(categoryId);
-    if (!category) {
-      res.status(404).json({ success: false, error: 'Category not found' });
-      return;
-    }
-    await task.removeCategory(category);
-    res.status(200).json({ success: true, message: 'Category removed from task' });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' });
-  }
-};

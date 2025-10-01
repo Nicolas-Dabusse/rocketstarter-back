@@ -1,3 +1,4 @@
+import * as categoryController from '../controllers/category.controller';
 import { Router } from 'express';
 import { healthCheck, databaseTest, apiInfo } from '../controllers/health.controller';
 import * as userController from '../controllers/user.controller';
@@ -32,9 +33,10 @@ router.get('/api/v1/tasks/:id', taskController.getTaskById);
 router.put('/api/v1/tasks/:id', taskController.updateTask);
 router.delete('/api/v1/tasks/:id', taskController.deleteTask);
 
-// Task category endpoints
-router.get('/api/v1/tasks/:id/categories', taskController.getTaskCategories);
-router.post('/api/v1/tasks/:id/categories', taskController.addCategoryToTask);
-router.delete('/api/v1/tasks/:id/categories/:categoryId', taskController.removeCategoryFromTask);
+// Category endpoints
+router.get('/api/v1/categories', categoryController.getAllCategories);
+router.get('/api/v1/tasks/:id/categories', categoryController.getTaskCategories);
+router.post('/api/v1/tasks/:id/categories', categoryController.addCategoryToTask);
+router.delete('/api/v1/tasks/:id/categories/:categoryId', categoryController.removeCategoryFromTask);
 
 export default router;

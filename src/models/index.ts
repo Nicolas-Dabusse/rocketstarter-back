@@ -2,6 +2,8 @@ import User from './User';
 import Project from './Project';
 import Task from './Task';
 import Category from './Category';
+import Reward from './Reward';
+import { ProjectCategory, TaskCategory } from './JunctionTables';
 import { sequelize } from '../config/db';
 
 // Import models to ensure they are initialized
@@ -10,14 +12,14 @@ import { sequelize } from '../config/db';
 // Define many-to-many relationships for categories
 // Project <-> Category
 Project.belongsToMany(Category, {
-  through: 'ProjectCategory',
+  through: ProjectCategory,
   foreignKey: 'projectId',
   otherKey: 'categoryId',
   as: 'categories',
 });
 
 Category.belongsToMany(Project, {
-  through: 'ProjectCategory',
+  through: ProjectCategory,
   foreignKey: 'categoryId',
   otherKey: 'projectId',
   as: 'projects',
@@ -25,14 +27,14 @@ Category.belongsToMany(Project, {
 
 // Task <-> Category
 Task.belongsToMany(Category, {
-  through: 'TaskCategory',
+  through: TaskCategory,
   foreignKey: 'taskId',
   otherKey: 'categoryId',
   as: 'categories',
 });
 
 Category.belongsToMany(Task, {
-  through: 'TaskCategory',
+  through: TaskCategory,
   foreignKey: 'categoryId',
   otherKey: 'taskId',
   as: 'tasks',
@@ -44,6 +46,9 @@ export {
   Project,
   Task,
   Category,
+  Reward,
+  ProjectCategory,
+  TaskCategory,
   sequelize
 };
 

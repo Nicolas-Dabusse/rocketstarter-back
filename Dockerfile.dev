@@ -17,6 +17,10 @@ RUN npm ci
 # Copy source code
 COPY src/ ./src/
 
+# Copy data folder and ensure it exists
+COPY data/ ./data/
+RUN mkdir -p ./data
+
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodejs -u 1001

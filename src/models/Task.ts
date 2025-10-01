@@ -83,13 +83,15 @@ Task.init(
       allowNull: true,
     },
     priority: {
-      type: DataTypes.ENUM('low', 'medium', 'high'),
+      type: DataTypes.INTEGER,
       allowNull: true,
+      validate: { min: 0, max: 2 },
     },
     status: {
-      type: DataTypes.ENUM('todo', 'inprogress', 'done'),
+      type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: 'todo',
+      defaultValue: 0, // 0 = todo
+      validate: { min: 0, max: 3 },
     },
   },
   {

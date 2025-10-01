@@ -1,3 +1,14 @@
+-- Table: Reward
+CREATE TABLE "Reward" (
+  id VARCHAR(255) PRIMARY KEY,
+  type VARCHAR(50) NOT NULL, -- ex: token, nft, free, btc, eth, custom, etc.
+  value VARCHAR(255) NOT NULL, -- montant, id NFT, description, etc.
+  contractAddress VARCHAR(255), -- optionnel, pour token/NFT
+  details TEXT, -- optionnel, infos complémentaires
+  taskId VARCHAR(255) NOT NULL,
+  createdAt TIMESTAMP NOT NULL DEFAULT NOW(),
+  CONSTRAINT fk_reward_task FOREIGN KEY (taskId) REFERENCES "Task"(id)
+);
 -- Table: User
 CREATE TABLE "User" (
   address VARCHAR(255) PRIMARY KEY, -- Wallet address as unique ID
@@ -30,8 +41,10 @@ CREATE TABLE "Task" (
   createdAt TIMESTAMP NOT NULL DEFAULT NOW(),
   updatedAt TIMESTAMP NOT NULL DEFAULT NOW(),
   effort VARCHAR(50),
-  priority VARCHAR(10) CHECK (priority IN ('low', 'medium', 'high')),
-  status VARCHAR(15) CHECK (status IN ('todo', 'inprogress', 'done')),
+  -- priority: 0=low, 1=medium, 2=high
+  priority INTEGER CHECK (priority IN (0, 1, 2)),
+  -- status: 0=todo, 1=inprogress, 2=inreview, 3=done
+  status INTEGER CHECK (status IN (0, 1, 2, 3)),
   CONSTRAINT fk_task_project FOREIGN KEY (projectId) REFERENCES "Project"(id),
   CONSTRAINT fk_task_builder FOREIGN KEY (builder) REFERENCES "User"(address)
 );
