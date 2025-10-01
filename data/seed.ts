@@ -42,29 +42,29 @@ async function seed() {
     });
 
     // Categories
-    await Category.findOrCreate({
-      where: { id: 'cat-uiux' },
+    const [categoryUIUX] = await Category.findOrCreate({
+      where: { name: 'UI/UX' },
       defaults: { name: 'UI/UX' }
     });
 
-    await Category.findOrCreate({
-      where: { id: 'cat-web3' },
+    const [categoryWeb3] = await Category.findOrCreate({
+      where: { name: 'Web3 Integration' },
       defaults: { name: 'Web3 Integration' }
     });
 
-    await Category.findOrCreate({
-      where: { id: 'cat-backend' },
+    const [categoryBackend] = await Category.findOrCreate({
+      where: { name: 'Backend' },
       defaults: { name: 'Backend' }
     });
 
-    await Category.findOrCreate({
-      where: { id: 'cat-docs' },
+    const [categoryDocs] = await Category.findOrCreate({
+      where: { name: 'Documentation' },
       defaults: { name: 'Documentation' }
     });
 
     // Project
     const [project] = await Project.findOrCreate({
-      where: { id: 'proj-kudora' },
+      where: { name: 'Kudora' },
       defaults: {
         name: 'Kudora',
         description: 'Plateforme de gestion de projet web2 → web3',
@@ -74,10 +74,10 @@ async function seed() {
     });
 
     // Tasks
-    await Task.findOrCreate({
-      where: { id: 'task-1' },
+    const [task1] = await Task.findOrCreate({
+      where: { title: 'Setup Wallet Authentication' },
       defaults: {
-        projectId: 'proj-kudora',
+        projectId: project.id,
         title: 'Setup Wallet Authentication',
         description: 'Implémenter la connexion via wallet.',
         effort: '8h',
@@ -87,10 +87,10 @@ async function seed() {
       }
     });
 
-    await Task.findOrCreate({
-      where: { id: 'task-2' },
+    const [task2] = await Task.findOrCreate({
+      where: { title: 'Project Kanban Board UI' },
       defaults: {
-        projectId: 'proj-kudora',
+        projectId: project.id,
         title: 'Project Kanban Board UI',
         description: 'Créer le drag-and-drop façon Trello.',
         effort: '6h',
@@ -100,10 +100,10 @@ async function seed() {
       }
     });
 
-    await Task.findOrCreate({
-      where: { id: 'task-3' },
+    const [task3] = await Task.findOrCreate({
+      where: { title: 'Smart Contract Deployment' },
       defaults: {
-        projectId: 'proj-kudora',
+        projectId: project.id,
         title: 'Smart Contract Deployment',
         description: 'Déployer un smart contract simple.',
         effort: '12h',
@@ -115,35 +115,35 @@ async function seed() {
 
     // Rewards
     await Reward.findOrCreate({
-      where: { id: 'reward-1' },
+      where: { taskId: task1.id, type: 'token' },
       defaults: {
         type: 'token',
         value: '100',
         contractAddress: '0xTOKENADDRESS123',
         details: '100 utility tokens pour completion',
-        taskId: 'task-1'
+        taskId: task1.id
       }
     });
 
     await Reward.findOrCreate({
-      where: { id: 'reward-2' },
+      where: { taskId: task2.id, type: 'nft' },
       defaults: {
         type: 'nft',
         value: 'NFT-Badge-001',
         contractAddress: '0xNFTADDRESS456',
         details: 'NFT exclusif pour contribution UI',
-        taskId: 'task-2'
+        taskId: task2.id
       }
     });
 
     await Reward.findOrCreate({
-      where: { id: 'reward-3' },
+      where: { taskId: task3.id, type: 'eth' },
       defaults: {
         type: 'eth',
         value: '0.05',
         contractAddress: null,
         details: 'Bonus ETH pour déploiement smart contract',
-        taskId: 'task-3'
+        taskId: task3.id
       }
     });
 
