@@ -5,6 +5,7 @@ import { Task as ITask, TaskPriority, TaskStatus } from '../types';
 import Project from './Project';
 import User from './User';
 import Category from './Category';
+import Step from './Step';
 
 // Define the attributes for creation (optional fields, id is auto-generated)
 interface TaskCreationAttributes extends Optional<ITask, 'id' | 'createdAt' | 'updatedAt' | 'status' | 'description' | 'link' | 'builder' | 'effort' | 'priority'> {}
@@ -13,6 +14,7 @@ interface TaskCreationAttributes extends Optional<ITask, 'id' | 'createdAt' | 'u
 class Task extends Model<ITask, TaskCreationAttributes> implements ITask {
   public id!: number;
   public projectId!: number;
+  public stepId?: number;
   public title!: string;
   public description?: string;
   public link?: string;
@@ -43,6 +45,14 @@ Task.init(
       allowNull: false,
       references: {
         model: Project,
+        key: 'id',
+      },
+    },
+    stepId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'Step',
         key: 'id',
       },
     },
@@ -107,6 +117,7 @@ Task.init(
 
 // Define associations
 Task.belongsTo(Project, { foreignKey: 'projectId', as: 'project' });
+Task.belongsTo(Step, { foreignKey: 'stepId', as: 'step' });
 Task.belongsTo(User, { foreignKey: 'builder', as: 'builderUser' });
 
 Project.hasMany(Task, { foreignKey: 'projectId', as: 'tasks' });

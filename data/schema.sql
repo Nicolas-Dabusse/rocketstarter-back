@@ -30,6 +30,19 @@ CREATE TABLE "Project" (
   CONSTRAINT fk_project_owner FOREIGN KEY (owner) REFERENCES "User"(address)
 );
 
+-- table: step
+CREATE TABLE "Step" (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  projectId INTEGER NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  description TEXT,
+  progress NUMERIC(5,2) DEFAULT 0,
+  createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updatedAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_step_project FOREIGN KEY (projectId) REFERENCES "Project"(id)
+);
+
+
 -- Table: Task
 CREATE TABLE "Task" (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -45,8 +58,10 @@ CREATE TABLE "Task" (
   priority INTEGER CHECK (priority IN (0, 1, 2)),
   -- status: 0=todo, 1=inprogress, 2=inreview, 3=done
   status INTEGER CHECK (status IN (0, 1, 2, 3)),
+  stepId INTEGER,
   CONSTRAINT fk_task_project FOREIGN KEY (projectId) REFERENCES "Project"(id),
-  CONSTRAINT fk_task_builder FOREIGN KEY (builder) REFERENCES "User"(address)
+  CONSTRAINT fk_task_builder FOREIGN KEY (builder) REFERENCES "User"(address),
+  CONSTRAINT fk_task_step FOREIGN KEY (stepId) REFERENCES "Step"(id)
 );
 
 -- Table: Category

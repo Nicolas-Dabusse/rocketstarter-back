@@ -17,7 +17,7 @@ async function seed() {
     console.log("✅ SQLite database connected");
 
     // Importer les modèles et la fonction d'initialisation
-    const { User, Project, Task, Category, Reward, initializeModels } = require('../src/models');
+    const { User, Project, Task, Step, Category, Reward, initializeModels } = require('../src/models');
 
     // Forcer la recréation des tables avec la nouvelle structure
     await sequelize.sync({ force: true });
@@ -71,11 +71,43 @@ async function seed() {
       }
     });
 
+    // Steps
+    const [step1] = await Step.findOrCreate({
+      where: { name: 'Frontend Setup' },
+      defaults: {
+        projectId: project.id,
+        name: 'Frontend Setup',
+        description: 'Configuration initiale du frontend React avec Web3 wallet integration',
+        progress: 60.0
+      }
+    });
+
+    const [step2] = await Step.findOrCreate({
+      where: { name: 'Smart Contract Development' },
+      defaults: {
+        projectId: project.id,
+        name: 'Smart Contract Development',
+        description: 'Développement et déploiement des smart contracts',
+        progress: 30.0
+      }
+    });
+
+    const [step3] = await Step.findOrCreate({
+      where: { name: 'Backend API' },
+      defaults: {
+        projectId: project.id,
+        name: 'Backend API',
+        description: 'API REST pour la gestion des projets et tâches',
+        progress: 80.0
+      }
+    });
+
     // Tasks
     const [task1] = await Task.findOrCreate({
       where: { title: 'Setup Wallet Authentication' },
       defaults: {
         projectId: project.id,
+        stepId: step1.id,
         title: 'Setup Wallet Authentication',
         description: 'Implémenter la connexion via wallet.',
         effort: '8h',
@@ -89,6 +121,7 @@ async function seed() {
       where: { title: 'Project Kanban Board UI' },
       defaults: {
         projectId: project.id,
+        stepId: step1.id,
         title: 'Project Kanban Board UI',
         description: 'Créer le drag-and-drop façon Trello.',
         effort: '6h',
@@ -102,12 +135,41 @@ async function seed() {
       where: { title: 'Smart Contract Deployment' },
       defaults: {
         projectId: project.id,
+        stepId: step2.id,
         title: 'Smart Contract Deployment',
         description: 'Déployer un smart contract simple.',
         effort: '12h',
         priority: 2,
         status: 2,
         builder: '0xBUILDER222'
+      }
+    });
+
+    const [task4] = await Task.findOrCreate({
+      where: { title: 'API Documentation' },
+      defaults: {
+        projectId: project.id,
+        stepId: step3.id,
+        title: 'API Documentation',
+        description: 'Documenter tous les endpoints API',
+        effort: '4h',
+        priority: 1,
+        status: 3,
+        builder: '0xBUILDER111'
+      }
+    });
+
+    const [task5] = await Task.findOrCreate({
+      where: { title: 'Token Reward System' },
+      defaults: {
+        projectId: project.id,
+        stepId: step2.id,
+        title: 'Token Reward System',
+        description: 'Implémenter le système de récompenses en tokens',
+        effort: '10h',
+        priority: 2,
+        status: 0,
+        builder: null
       }
     });
 

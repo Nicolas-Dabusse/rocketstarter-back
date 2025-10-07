@@ -4,6 +4,7 @@ import { healthCheck, databaseTest, apiInfo } from '../controllers/health.contro
 import * as userController from '../controllers/user.controller';
 import * as projectController from '../controllers/project.controller';
 import * as taskController from '../controllers/task.controller';
+import * as stepController from '../controllers/step.controller';
 
 const router = Router();
 
@@ -32,6 +33,15 @@ router.get('/api/v1/tasks', taskController.getAllTasks);
 router.get('/api/v1/tasks/:id', taskController.getTaskById);
 router.put('/api/v1/tasks/:id', taskController.updateTask);
 router.delete('/api/v1/tasks/:id', taskController.deleteTask);
+
+// Step endpoints
+router.post('/api/v1/steps', stepController.createStep);
+router.get('/api/v1/steps', stepController.getAllSteps);
+router.get('/api/v1/steps/my', stepController.getMySteps);
+router.get('/api/v1/steps/project/:projectId', stepController.getStepsByProject);
+router.get('/api/v1/steps/:id', stepController.getStepById);
+router.put('/api/v1/steps/:id', stepController.updateStep);
+router.delete('/api/v1/steps/:id', stepController.deleteStep);
 
 // Category endpoints
 router.get('/api/v1/categories', categoryController.getAllCategories);

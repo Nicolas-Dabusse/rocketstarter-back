@@ -1,10 +1,12 @@
 import User from './User';
 import Project from './Project';
 import Task from './Task';
+import Step from './Step';
 import Category from './Category';
 import Reward from './Reward';
 import { ProjectCategory, TaskCategory } from './JunctionTables';
 import { sequelize } from '../config/db';
+import './associations';
 
 // Import models to ensure they are initialized
 // The associations are already defined in each model file
@@ -45,6 +47,7 @@ export {
   User,
   Project,
   Task,
+  Step,
   Category,
   Reward,
   ProjectCategory,
@@ -55,9 +58,8 @@ export {
 // Export a function to initialize all models
 export const initializeModels = async (): Promise<void> => {
   try {
-    // Utilise alter: true seulement en développement
-    const alter = process.env.NODE_ENV === 'development';
-    await sequelize.sync({ alter });
+    // En développement, utilise seulement sync sans alter pour éviter les erreurs
+    await sequelize.sync({ force: false, alter: false });
     console.log('✅ All models synchronized successfully.');
   } catch (error) {
     console.error('❌ Error initializing models:', error);
