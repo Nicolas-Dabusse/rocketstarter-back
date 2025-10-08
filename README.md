@@ -30,15 +30,17 @@ Before running this project, make sure you have installed:
 ## 🛠️ Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/Nicolas-Dabusse/rocketstarter-back.git
    cd rocketstarter-back
    ```
 
-2. **The project is ready to use!** 
+2. **The project is ready to use!**
    The `.env` file is already configured for development with SQLite.
 
    **Optional**: Edit the `.env` file if needed:
+
    ```env
    # Application Configuration
    PORT=3000
@@ -54,6 +56,7 @@ Before running this project, make sure you have installed:
 ## 🐳 Quick Start with Docker (Recommended)
 
 ### 1. Start the Development Server
+
 ```bash
 # Start the API server in development mode
 docker compose up -d --build
@@ -62,7 +65,16 @@ docker compose up -d --build
 docker compose logs -f
 ```
 
-### 2. Seed the Database (Optional)
+### 2. Access the Services
+
+The following services will be available:
+
+- **API**: `http://localhost:3000`
+- **Database Viewer**: `http://localhost:8080` (SQLite Web UI)
+- **Health Check**: `http://localhost:3000/health`
+
+### 3. Seed the Database (Optional)
+
 ```bash
 # Add sample data for testing
 npm run seed:docker
@@ -71,13 +83,18 @@ npm run seed:docker
 npm run seed:auto
 ```
 
-### 3. Test the API
-The API will be available at:
-- **Base URL**: `http://localhost:3000`
-- **Health Check**: `http://localhost:3000/health`
-- **API Info**: `http://localhost:3000/api/v1`
+### 4. Using the Database Viewer
 
-### 4. Stop the Services
+Access the SQLite database browser at `http://localhost:8080`:
+
+- View all tables and their data
+- Run SQL queries directly
+- Export data
+- Browse database schema
+- No credentials required (read-only mode)
+
+### 5. Stop the Services
+
 ```bash
 docker compose down
 ```
@@ -87,15 +104,17 @@ docker compose down
 If you prefer to run the application locally without Docker:
 
 1. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 2. **Seed the database (optional)**
+
    ```bash
    npm run seed
    ```
-   
+
    **Note:** The seeding process creates sample users, projects, tasks, categories, and rewards for testing.
 
 3. **Start the development server**
@@ -110,7 +129,9 @@ The API will be available at `http://localhost:3000`
 ## 📊 Database & Seeding
 
 ### Database Schema
+
 The database automatically creates the following entities:
+
 - **Users** (with wallet addresses)
 - **Projects** (with owner and progress tracking)
 - **Tasks** (Kanban workflow: todo → inprogress → inreview → done)
@@ -131,14 +152,17 @@ npm run seed
 ```
 
 ### Sample Data Included
+
 After seeding, you'll have:
+
 - 3 sample users (John Doe, Jane Smith, Alice Johnson)
-- 2 projects (DeFi Platform, NFT Marketplace)  
+- 2 projects (DeFi Platform, NFT Marketplace)
 - Multiple tasks with different statuses (todo=0, inprogress=1, inreview=2, done=3)
 - 3 categories (Frontend, Backend, Blockchain)
 - Sample rewards (tokens, crypto, NFTs) linked to tasks
 
 **Troubleshooting:** If seeded data doesn't appear in API responses:
+
 ```bash
 # Restart the application container
 docker-compose restart app
@@ -166,11 +190,13 @@ npm run test:integration
 ## 📖 API Documentation
 
 ### 🎯 For Frontend Developers
+
 1. **CORS is pre-configured** for common development ports (3000, 5173, 8080, etc.)
 2. **Quick Test**: Open `cors-test.html` in your browser to test the API
 3. **Detailed Guide**: See [FRONTEND_INTEGRATION.md](./FRONTEND_INTEGRATION.md)
 
 ### Base Endpoints
+
 - **Health Check**: `GET http://localhost:3000/health`
 - **API Info**: `GET http://localhost:3000/api/v1`
 - **CORS Test Page**: Open `cors-test.html` in browser
@@ -178,6 +204,7 @@ npm run test:integration
 ### Main API Routes
 
 #### Users
+
 - `GET /api/v1/users` - List all users
 - `POST /api/v1/users` - Create user
 - `GET /api/v1/users/:address` - Get user by address
@@ -185,6 +212,7 @@ npm run test:integration
 - `DELETE /api/v1/users/:address` - Delete user
 
 #### Projects
+
 - `GET /api/v1/projects` - List all projects
 - `POST /api/v1/projects` - Create project
 - `GET /api/v1/projects/:id` - Get project details
@@ -192,6 +220,7 @@ npm run test:integration
 - `DELETE /api/v1/projects/:id` - Delete project (owner only)
 
 #### Tasks (Kanban Workflow)
+
 - `GET /api/v1/tasks` - List all tasks
 - `POST /api/v1/tasks` - Create task
 - `GET /api/v1/tasks/:id` - Get task details
@@ -199,37 +228,41 @@ npm run test:integration
 - `DELETE /api/v1/tasks/:id` - Delete task (owner only)
 
 #### Categories
+
 - `GET /api/v1/categories` - List all categories
 - `GET /api/v1/tasks/:id/categories` - Get task categories
 - `POST /api/v1/tasks/:id/categories` - Add category to task
 - `DELETE /api/v1/tasks/:id/categories/:categoryId` - Remove category from task
 
 ### Task Workflow Rules
+
 - **Builder can**: Assign themselves (`todo` → `inprogress`), release task (`inprogress` → `todo`), request review (`inprogress` → `inreview`)
 - **Owner can**: Mark task as done (`inreview` → `done`), modify any task, delete tasks
 
 ### Authentication Header
+
 For secured operations, include:
+
 ```
 x-user-address: 0xYourWalletAddress
 ```
 
 ## 🔍 Available Scripts
 
-| Script | Description |
-|--------|-------------|
-| `npm start` | Start the production server |
-| `npm run dev` | Start the development server with hot reload |
-| `npm run build` | Build TypeScript for production |
-| `npm test` | Run the test suite |
-| `npm run lint` | Run ESLint |
-| `npm run format` | Format code with Prettier |
-| `npm run seed` | Seed the database (local) |
-| `npm run seed:docker` | Seed the database (Docker) |
-| `npm run seed:auto` | Start container + seed automatically |
-| `npm run docker:up` | Start Docker containers |
-| `npm run docker:down` | Stop Docker containers |
-| `npm run docker:logs` | View Docker logs |
+| Script                | Description                                  |
+| --------------------- | -------------------------------------------- |
+| `npm start`           | Start the production server                  |
+| `npm run dev`         | Start the development server with hot reload |
+| `npm run build`       | Build TypeScript for production              |
+| `npm test`            | Run the test suite                           |
+| `npm run lint`        | Run ESLint                                   |
+| `npm run format`      | Format code with Prettier                    |
+| `npm run seed`        | Seed the database (local)                    |
+| `npm run seed:docker` | Seed the database (Docker)                   |
+| `npm run seed:auto`   | Start container + seed automatically         |
+| `npm run docker:up`   | Start Docker containers                      |
+| `npm run docker:down` | Stop Docker containers                       |
+| `npm run docker:logs` | View Docker logs                             |
 
 ## 🐳 Docker Commands
 
@@ -281,12 +314,14 @@ rm ./data/database.sqlite && npm run seed:auto
 ## 🌐 Environment Configuration
 
 ### Development
+
 - Database: SQLite (no setup required)
 - Hot reload enabled with nodemon
 - TypeScript compilation on-the-fly
 - Detailed error messages and logging
 
 ### Production Ready
+
 - TypeScript compiled to JavaScript
 - Optimized Docker images
 - SQLite for easy deployment
@@ -337,12 +372,14 @@ rocketstarter-back/
 ### Common Issues
 
 **Port already in use**
+
 ```bash
 # Find and kill process using port 3000
 lsof -ti:3000 | xargs kill -9
 ```
 
 **Database connection issues**
+
 ```bash
 # Reset SQLite database
 rm ./data/database.sqlite
@@ -351,6 +388,7 @@ npm run seed:auto
 ```
 
 **Seeded data not visible in API**
+
 ```bash
 # Check if data exists in database
 docker compose exec app ls -la ./data/
@@ -361,6 +399,7 @@ npm run seed:docker
 ```
 
 **Permission issues with Docker**
+
 ```bash
 # Fix file permissions
 sudo chown -R $USER:$USER .
@@ -380,7 +419,7 @@ After seeding, test these endpoints to verify everything works:
 # Test users endpoint
 curl http://localhost:3000/api/v1/users
 
-# Test projects endpoint  
+# Test projects endpoint
 curl http://localhost:3000/api/v1/projects
 
 # Test tasks endpoint

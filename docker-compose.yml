@@ -20,6 +20,22 @@ services:
       - rocketstarter-network
     command: npm run dev:watch
 
+  # SQLite Database Browser
+  sqlite-web:
+    image: coleifer/sqlite-web
+    container_name: rocketstarter-db-viewer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/data
+    networks:
+      - rocketstarter-network
+    environment:
+      - SQLITE_DATABASE=/data/database.sqlite
+    command:
+      ["sqlite_web", "-H", "0.0.0.0", "-p", "8080", "/data/database.sqlite"]
+
 networks:
   rocketstarter-network:
     driver: bridge
