@@ -47,5 +47,48 @@ const api = axios.create({
 });
 ```
 
+## 5. Endpoints complets
+
+### Health
+- `GET    /health`                  → Health check
+- `GET    /db-test`                 → Test connexion DB
+- `GET    /api/v1`                  → Infos API
+
+### Utilisateurs
+- `POST   /api/v1/users`            → Créer un utilisateur
+- `GET    /api/v1/users`            → Liste tous les utilisateurs
+- `GET    /api/v1/users/:address`   → Détail utilisateur par adresse
+- `PUT    /api/v1/users/:address`   → Modifier utilisateur
+- `DELETE /api/v1/users/:address`   → Supprimer utilisateur
+
+### Projets
+- `POST   /api/v1/projects`         → Créer un projet
+- `GET    /api/v1/projects`         → Liste tous les projets
+- `GET    /api/v1/projects/:id`     → Détail projet
+- `PUT    /api/v1/projects/:id`     → Modifier projet
+- `DELETE /api/v1/projects/:id`     → Supprimer projet
+
+### Tâches
+- `POST   /api/v1/tasks`            → Créer une tâche
+- `GET    /api/v1/tasks`            → Liste toutes les tâches
+- `GET    /api/v1/tasks/:id`        → Détail tâche
+- `PUT    /api/v1/tasks/:id`        → Modifier tâche
+- `DELETE /api/v1/tasks/:id`        → Supprimer tâche
+
+### Steps
+- `POST   /api/v1/steps`                    → Créer un step
+- `GET    /api/v1/steps`                    → Liste tous les steps
+- `GET    /api/v1/steps/my`                 → Steps assignés à moi
+- `GET    /api/v1/steps/project/:projectId` → Steps d'un projet
+- `GET    /api/v1/steps/:id`                → Détail step
+- `PUT    /api/v1/steps/:id`                → Modifier step
+- `DELETE /api/v1/steps/:id`                → Supprimer step
+
+### Catégories
+- `GET    /api/v1/categories`                       → Liste toutes les catégories
+- `GET    /api/v1/tasks/:id/categories`             → Catégories d'une tâche
+- `POST   /api/v1/tasks/:id/categories`             → Ajouter catégorie à une tâche
+- `DELETE /api/v1/tasks/:id/categories/:categoryId` → Retirer catégorie d'une tâche
+
 ---
 Pour toute question, ping le backend 🚀
