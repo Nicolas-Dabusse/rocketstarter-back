@@ -5,12 +5,16 @@ import { CreateProjectRequest, UpdateProjectRequest } from '../types';
 export const createProject = async (req: Request, res: Response): Promise<void> => {
   try {
     const projectData: CreateProjectRequest = req.body;
-    
-    // Create project (id will be auto-generated as INTEGER AUTOINCREMENT)
+    const whitelist = Array.isArray(projectData.whitelist) ? projectData.whitelist : [];
     const project = await Project.create({
-      ...projectData
+      name: projectData.name,
+      description: projectData.description,
+      owner: projectData.owner,
+      bank: projectData.bank ?? 0,
+      whitelist,
+      contractAddress: projectData.contractAddress,
+      twoCryptoId: projectData.twoCryptoId
     });
-    
     res.status(201).json({
       success: true,
       data: project,
@@ -122,37 +126,25 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
   try {
     const { id } = req.params;
     const updateData: UpdateProjectRequest = req.body;
-    
     if (!id) {
-      res.status(400).json({
-        success: false,
-        error: 'Project ID is required'
-      });
+      res.status(400).json({ success: false, error: 'Project ID is required' });
       return;
     }
-    
     const projectId = parseInt(id, 10);
-    
     if (isNaN(projectId)) {
-      res.status(400).json({
-        success: false,
-        error: 'Invalid project ID'
-      });
+      res.status(400).json({ success: false, error: 'Invalid project ID' });
       return;
     }
-    
-    const [updatedRowsCount] = await Project.update(updateData, {
-      where: { id: projectId }
-    });
-    
+    // Préparer les données à mettre à jour
+    const updateFields: any = { ...updateData };
+    if (updateData.whitelist) {
+      updateFields.whitelist = updateData.whitelist;
+    }
+    const [updatedRowsCount] = await Project.update(updateFields, { where: { id: projectId } });
     if (updatedRowsCount === 0) {
-      res.status(404).json({
-        success: false,
-        error: 'Project not found'
-      });
+      res.status(404).json({ success: false, error: 'Project not found' });
       return;
     }
-    
     const updatedProject = await Project.findByPk(id, {
       include: [
         {
@@ -162,7 +154,6 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
         }
       ]
     });
-    
     res.status(200).json({
       success: true,
       data: updatedProject,

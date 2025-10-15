@@ -39,12 +39,20 @@ export interface CreateProjectRequest {
   name: string;
   description?: string;
   owner: string;
+  bank: number;
+  whitelist: string[];
+  contractAddress?: string;
+  twoCryptoId?: string;
 }
 
 export interface UpdateProjectRequest {
   name?: string;
   progress?: number;
   description?: string;
+  bank?: number;
+  whitelist?: string[];
+  contractAddress?: string;
+  twoCryptoId?: string;
 }
 
 // Task types
@@ -67,40 +75,55 @@ export const TaskStatusLabel: Record<TaskStatus, string> = {
 
 export interface Task {
   id: number;
+  contractAddress?: string;
   projectId: number;
   stepId?: number;
   title: string;
+  image?: string;
   description?: string;
   link?: string;
+  taskOwner?: string;
   builder?: string; // User address
   createdAt: Date;
   updatedAt: Date;
-  effort?: string;
+  effort?: number; // Fibonacci integer
   priority?: TaskPriority;
   status: TaskStatus;
+  dueDate?: Date;
+  dueDateStatus?: number;
 }
 
 export interface CreateTaskRequest {
   projectId: number;
   stepId?: number;
   title: string;
+  contractAddress?: string;
+  image?: string;
   description?: string;
   link?: string;
+  taskOwner?: string;
   builder?: string;
-  effort?: string;
+  effort?: number;
   priority?: TaskPriority;
   status?: TaskStatus;
+  dueDate?: Date;
+  dueDateStatus?: number;
 }
 
 export interface UpdateTaskRequest {
   stepId?: number;
   title?: string;
+  contractAddress?: string;
+  image?: string;
   description?: string;
   link?: string;
+  taskOwner?: string;
   builder?: string;
-  effort?: string;
+  effort?: number;
   priority?: TaskPriority;
   status?: TaskStatus;
+  dueDate?: Date;
+  dueDateStatus?: number;
 }
 
 // Category types

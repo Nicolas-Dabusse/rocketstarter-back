@@ -39,17 +39,22 @@ interface TaskCreationAttributes extends Optional<ITask, 'id' | 'createdAt' | 'u
 // Define the Task model class
 class Task extends Model<ITask, TaskCreationAttributes> implements ITask {
   public id!: number;
+  public contractAddress?: string;
   public projectId!: number;
   public stepId?: number;
   public title!: string;
+  public image?: string;
   public description?: string;
   public link?: string;
+  public taskOwner?: string;
   public builder?: string;
   public createdAt!: Date;
   public updatedAt!: Date;
-  public effort?: string;
+  public effort?: number;
   public priority?: TaskPriority;
   public status!: TaskStatus;
+  public dueDate?: Date;
+  public dueDateStatus?: number;
 
   // Sequelize association mixins for Category
   public getCategories!: BelongsToManyGetAssociationsMixin<Category>;
@@ -66,6 +71,10 @@ Task.init(
       autoIncrement: true,
       allowNull: false,
     },
+    contractAddress: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
     projectId: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -78,13 +87,17 @@ Task.init(
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: 'Step',
+        model: Step,
         key: 'id',
       },
     },
     title: {
       type: DataTypes.STRING(255),
       allowNull: false,
+    },
+    image: {
+      type: DataTypes.STRING(512),
+      allowNull: true,
     },
     description: {
       type: DataTypes.TEXT,
@@ -95,6 +108,14 @@ Task.init(
       allowNull: true,
       validate: {
         isUrl: true,
+      },
+    },
+    taskOwner: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+      references: {
+        model: User,
+        key: 'address',
       },
     },
     builder: {
@@ -116,8 +137,11 @@ Task.init(
       defaultValue: DataTypes.NOW,
     },
     effort: {
-      type: DataTypes.STRING(50),
+      type: DataTypes.INTEGER,
       allowNull: true,
+      validate: {
+        isIn: [[1, 2, 3, 5, 8, 13]],
+      },
     },
     priority: {
       type: DataTypes.INTEGER,
@@ -129,6 +153,15 @@ Task.init(
       allowNull: false,
       defaultValue: 0, // 0 = todo
       validate: { min: 0, max: 3 },
+    },
+    dueDate: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    dueDateStatus: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      validate: { min: 0, max: 2 },
     },
   },
   {
@@ -145,8 +178,10 @@ Task.init(
 Task.belongsTo(Project, { foreignKey: 'projectId', as: 'project' });
 Task.belongsTo(Step, { foreignKey: 'stepId', as: 'step' });
 Task.belongsTo(User, { foreignKey: 'builder', as: 'builderUser' });
+Task.belongsTo(User, { foreignKey: 'taskOwner', as: 'taskOwnerUser' });
 
 Project.hasMany(Task, { foreignKey: 'projectId', as: 'tasks' });
 User.hasMany(Task, { foreignKey: 'builder', as: 'assignedTasks' });
+User.hasMany(Task, { foreignKey: 'taskOwner', as: 'ownedTasks' });
 
 export default Task;
