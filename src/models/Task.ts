@@ -25,6 +25,8 @@ import Step from './Step';
 //   effort INTEGER CHECK (effort IN (1, 2, 3, 5, 8, 13)), -- Fibonacci sequence
 //   priority INTEGER CHECK (priority IN (0, 1, 2)), -- priority: 0=low, 1=medium, 2=high
 //   status INTEGER CHECK (status IN (0, 1, 2, 3)), -- status: 0=todo, 1=inprogress, 2=inreview, 3=done
+//   claimedAt TIMESTAMP,
+//   duration INTEGER,
 //   dueDate TIMESTAMP,
 //   dueDateStatus INTEGER CHECK (dueDateStatus IN (0, 1, 2)), -- 0=onTime 1=EndingSoon 2=OutOfTime
 //   CONSTRAINT fk_task_project FOREIGN KEY (projectId) REFERENCES "Project"(id),
@@ -53,6 +55,7 @@ class Task extends Model<ITask, TaskCreationAttributes> implements ITask {
   public effort?: number;
   public priority?: TaskPriority;
   public status!: TaskStatus;
+  
   public dueDate?: Date;
   public dueDateStatus?: number;
 
