@@ -18,7 +18,10 @@ export const createTask = async (req: Request, res: Response): Promise<void> => 
       effort: taskData.effort,
       priority: typeof taskData.priority === 'number' ? taskData.priority : 1,
       status: 0, 
-      builder: undefined,
+      builder: taskData.builder || undefined,
+      duration: taskData.duration || undefined,
+      dueDate: taskData.dueDate || undefined,
+      dueDateStatus: taskData.dueDateStatus
     });
     res.status(201).json({ success: true, data: task, message: 'Task created' });
   } catch (error) {
@@ -122,6 +125,7 @@ export const updateTask = async (req: Request, res: Response): Promise<void> => 
       return;
     }
 
+
     // Status transitions: 0=todo, 1=inprogress, 2=inreview, 3=done
     const currentStatus = task.status;
     const newStatus = updateData.status;
@@ -140,7 +144,8 @@ export const updateTask = async (req: Request, res: Response): Promise<void> => 
 
     // RULE 1: Builder claims free task (0 → 1)
     if (currentStatus === 0 && newStatus === 1) {
-      await task.update({ builder: userAddress, status: 1 });
+      const now = new Date();
+      await task.update({ builder: userAddress, status: 1, claimedAt: now });
       res.status(200).json({ success: true, data: task, message: 'Task claimed by builder' });
       return;
     }
@@ -254,6 +259,7 @@ export const updateTask = async (req: Request, res: Response): Promise<void> => 
         return;
       }
     }
+    
 
     // Unauthorized action
     res.status(403).json({ 

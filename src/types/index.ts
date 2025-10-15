@@ -89,6 +89,8 @@ export interface Task {
   effort?: number; // Fibonacci integer
   priority?: TaskPriority;
   status: TaskStatus;
+  claimedAt?: Date;
+  duration?: number; // in hours
   dueDate?: Date;
   dueDateStatus?: number;
 }
@@ -106,6 +108,7 @@ export interface CreateTaskRequest {
   effort?: number;
   priority?: TaskPriority;
   status?: TaskStatus;
+  duration?: number;
   dueDate?: Date;
   dueDateStatus?: number;
 }
@@ -122,6 +125,8 @@ export interface UpdateTaskRequest {
   effort?: number;
   priority?: TaskPriority;
   status?: TaskStatus;
+  claimedAt?: Date;
+  duration?: number;
   dueDate?: Date;
   dueDateStatus?: number;
 }
