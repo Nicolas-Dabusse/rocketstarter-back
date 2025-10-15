@@ -22,13 +22,18 @@ CREATE TABLE "User" (
 CREATE TABLE "Project" (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name VARCHAR(255) NOT NULL,
+  contractAddress VARCHAR(255) UNIQUE,  -- optional, for token/NFT
   progress NUMERIC(5,2) DEFAULT 0,       -- number, could be percentage
+  twoCryptoId VARCHAR(255),              -- optional, for 2crypto integration
   description TEXT,
   createdAt TIMESTAMP NOT NULL DEFAULT NOW(),
   updatedAt TIMESTAMP NOT NULL DEFAULT NOW(),
   owner VARCHAR(255) NOT NULL,
+  whitelist TEXT, -- JSON array of whitelisted addresses
+  bank NUMERIC(20,8) DEFAULT 0, -- total funds raised
   CONSTRAINT fk_project_owner FOREIGN KEY (owner) REFERENCES "User"(address)
 );
+  
 
 -- table: step
 CREATE TABLE "Step" (
@@ -46,22 +51,25 @@ CREATE TABLE "Step" (
 -- Table: Task
 CREATE TABLE "Task" (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
+  contractAddress VARCHAR(255),
   projectId INTEGER NOT NULL,
   title VARCHAR(255) NOT NULL,
+  image VARCHAR(512),
   description TEXT,
   link VARCHAR(512),
+  taskOwner VARCHAR(255), -- owner wallet
   builder VARCHAR(255),
   createdAt TIMESTAMP NOT NULL DEFAULT NOW(),
   updatedAt TIMESTAMP NOT NULL DEFAULT NOW(),
-  effort VARCHAR(50),
-  -- priority: 0=low, 1=medium, 2=high
-  priority INTEGER CHECK (priority IN (0, 1, 2)),
-  -- status: 0=todo, 1=inprogress, 2=inreview, 3=done
-  status INTEGER CHECK (status IN (0, 1, 2, 3)),
-  stepId INTEGER,
+  effort INTEGER CHECK (effort IN (1, 2, 3, 5, 8, 13)), -- Fibonacci sequence
+  priority INTEGER CHECK (priority IN (0, 1, 2)), -- priority: 0=low, 1=medium, 2=high
+  status INTEGER CHECK (status IN (0, 1, 2, 3)), -- status: 0=todo, 1=inprogress, 2=inreview, 3=done
+  dueDate TIMESTAMP,
+  dueDateStatus INTEGER CHECK (dueDateStatus IN (0, 1, 2)), -- 0=onTime 1=EndingSoon 2=OutOfTime
   CONSTRAINT fk_task_project FOREIGN KEY (projectId) REFERENCES "Project"(id),
   CONSTRAINT fk_task_builder FOREIGN KEY (builder) REFERENCES "User"(address),
-  CONSTRAINT fk_task_step FOREIGN KEY (stepId) REFERENCES "Step"(id)
+  CONSTRAINT fk_task_step FOREIGN KEY (stepId) REFERENCES "Step"(id),
+  CONSTRAINT fk_task_taskOwner FOREIGN KEY (taskOwner) REFERENCES "User"(address)
 );
 
 -- Table: Category

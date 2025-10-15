@@ -15,6 +15,10 @@ class Project extends Model<IProject, ProjectCreationAttributes> implements IPro
   public createdAt!: Date;
   public updatedAt!: Date;
   public owner!: string;
+  public contractAddress?: string;
+  public bank!: number;
+  public whitelist!: string[];
+  public twoCryptoId?: string;
 }
 
 // Initialize the model
@@ -61,7 +65,29 @@ Project.init(
         key: 'address',
       },
     },
-  },
+    contractAddress: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+      unique: true,
+    },
+    bank: {
+      type: DataTypes.DECIMAL(20, 8),
+      allowNull: false,
+      defaultValue: 0,
+    },
+    whitelist: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      defaultValue: '[]',
+      get() {
+        return this.getDataValue('whitelist');
+      },
+      set(value: string) {
+        // append to the whitelist
+        const currentWhitelist = this.getDataValue('whitelist') || [];
+        this.setDataValue('whitelist', [...currentWhitelist, value]);
+      }
+  }},
   {
     sequelize,
     modelName: 'Project',

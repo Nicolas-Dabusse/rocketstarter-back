@@ -29,6 +29,10 @@ export interface Project {
   createdAt: Date;
   updatedAt: Date;
   owner: string; // User address
+  contractAddress?: string;
+  bank: number;
+  whitelist: string[]; // array of whitelisted addresses
+  twoCryptoId?: string;
 }
 
 export interface CreateProjectRequest {
