@@ -128,6 +128,7 @@ async function seed() {
       where: { title: "Setup Wallet Authentication" },
       defaults: {
         projectId: project.id,
+        taskOwner: "0xOWNER1234567890",
         stepId: step1.id,
         title: "Setup Wallet Authentication",
         description: "Implémenter la connexion via wallet.",
@@ -142,6 +143,7 @@ async function seed() {
       where: { title: "Project Kanban Board UI" },
       defaults: {
         projectId: project.id,
+        taskOwner: "0xOWNER1234567890",
         stepId: step1.id,
         title: "Project Kanban Board UI",
         description: "Créer le drag-and-drop façon Trello.",
@@ -156,6 +158,7 @@ async function seed() {
       where: { title: "Smart Contract Deployment" },
       defaults: {
         projectId: project.id,
+        taskOwner: "0xOWNER1234567890",
         stepId: step2.id,
         title: "Smart Contract Deployment",
         description: "Déployer un smart contract simple.",
@@ -170,6 +173,7 @@ async function seed() {
       where: { title: "API Documentation" },
       defaults: {
         projectId: project.id,
+        taskOwner: "0xOWNER1234567890",
         stepId: step3.id,
         title: "API Documentation",
         description: "Documenter tous les endpoints API",
@@ -184,6 +188,7 @@ async function seed() {
       where: { title: "Token Reward System" },
       defaults: {
         projectId: project.id,
+        taskOwner: "0xOWNER1234567890",
         stepId: step2.id,
         title: "Token Reward System",
         description: "Implémenter le système de récompenses en tokens",
