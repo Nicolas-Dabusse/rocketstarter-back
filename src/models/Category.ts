@@ -8,6 +8,7 @@ interface CategoryCreationAttributes extends Optional<ICategory, 'id'> {}
 // Define the Category model class
 class Category extends Model<ICategory, CategoryCreationAttributes> implements ICategory {
   public id!: number;
+  public type!: string;
   public name!: string;
 }
 
@@ -18,6 +19,10 @@ Category.init(
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
+      allowNull: false,
+    },
+    type: {
+      type: DataTypes.STRING(50),
       allowNull: false,
     },
     name: {
