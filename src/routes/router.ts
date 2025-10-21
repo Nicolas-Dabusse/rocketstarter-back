@@ -5,6 +5,7 @@ import * as userController from '../controllers/user.controller';
 import * as projectController from '../controllers/project.controller';
 import * as taskController from '../controllers/task.controller';
 import * as stepController from '../controllers/step.controller';
+import { updateTask } from '../controllers/updateTask.controller';
 
 const router = Router();
 
@@ -31,7 +32,7 @@ router.delete('/api/v1/projects/:id', projectController.deleteProject);
 router.post('/api/v1/tasks', taskController.createTask);
 router.get('/api/v1/tasks', taskController.getAllTasks);
 router.get('/api/v1/tasks/:id', taskController.getTaskById);
-router.put('/api/v1/tasks/:id', taskController.updateTask);
+router.put('/api/v1/tasks/:id', updateTask); // Utilise le contrôleur séparé
 router.delete('/api/v1/tasks/:id', taskController.deleteTask);
 
 // Step endpoints
