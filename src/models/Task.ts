@@ -155,6 +155,35 @@ Task.init(
     timestamps: true,
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
+    hooks: {
+      // HOOK: Force status=0 and builder=null when creating a task
+      beforeCreate: async (task) => {
+        if (task.status !== 0) {
+          task.status = 0;
+        }
+        if (task.builder) {
+          task.builder = undefined;
+        }
+      },
+      
+      // HOOK: Validate business rules before any update
+      beforeUpdate: async (task) => {
+        // RULE: Tasks with status=0 (todo) cannot have a builder assigned
+        if (task.status === 0 && task.builder) {
+          throw new Error('Business rule violation: Task with status=0 (todo) cannot have a builder assigned');
+        }
+        
+        // RULE: Prevent skipping review process (1 → 3 forbidden)
+        if (task.changed('status')) {
+          const oldStatus = task.previous('status') as number;
+          const newStatus = task.status;
+          
+          if (oldStatus === 1 && newStatus === 3) {
+            throw new Error('Business rule violation: Cannot skip review process - task must go from in-progress (1) to review (2) first');
+          }
+        }
+      }
+    }
   }
 );
 

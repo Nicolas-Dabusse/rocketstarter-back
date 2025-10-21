@@ -90,8 +90,8 @@ export const updateTask = async (req: Request, res: Response): Promise<void> => 
       return;
     }
 
-    // RULE 6: Owner or TaskOwner validates task (2 → 3) WITHOUT taking ownership
-    if (currentStatus === 2 && (isOwner || isTaskOwner) && newStatus === 3) {
+    // RULE 6: TaskOwner validates task (2 → 3) WITHOUT taking ownership
+    if (currentStatus === 2 && isTaskOwner && newStatus === 3) {
       // Validation without changing builder - rewards stay with original builder
       let durationHours = task.duration;
       if (task.claimedAt) {
@@ -100,20 +100,20 @@ export const updateTask = async (req: Request, res: Response): Promise<void> => 
         durationHours = Math.max(0, Math.round(diffMs / (1000 * 60 * 60))); // heures arrondies
       }
       await task.update({ status: 3, duration: durationHours });
-      res.status(200).json({ success: true, data: task, message: 'Task validated' });
+      res.status(200).json({ success: true, data: task, message: 'Task validated by task owner' });
       return;
     }
 
-    // RULE 7: Owner or TaskOwner rejects (2 → 1) 
-    if (currentStatus === 2 && (isOwner || isTaskOwner) && newStatus === 1) {
+    // RULE 7: TaskOwner rejects (2 → 1) 
+    if (currentStatus === 2 && isTaskOwner && newStatus === 1) {
       await task.update({ status: 1 });
-      res.status(200).json({ success: true, data: task, message: 'Task rejected, back to in progress' });
+      res.status(200).json({ success: true, data: task, message: 'Task rejected by task owner, back to in progress' });
       return;
     }
 
     // LOCK PROTECTION: Status 2 tasks are LOCKED to their assigned builder
-    // No one else can claim or reassign them, not even the owner or taskOwner
-    if (currentStatus === 2 && !isAssignedBuilder && !isOwner && !isTaskOwner) {
+    // No one else can claim or reassign them, not even the taskOwner
+    if (currentStatus === 2 && !isAssignedBuilder && !isTaskOwner) {
       res.status(403).json({ 
         success: false, 
         error: 'Task in review is locked to assigned builder' 
@@ -121,8 +121,8 @@ export const updateTask = async (req: Request, res: Response): Promise<void> => 
       return;
     }
 
-    // LOCK PROTECTION: Even owner/taskOwner cannot reassign while task is in review (status 2)
-    if (currentStatus === 2 && (isOwner || isTaskOwner) && (newStatus === 2 || updateData.builder !== undefined)) {
+    // LOCK PROTECTION: Even taskOwner cannot reassign while task is in review (status 2)
+    if (currentStatus === 2 && isTaskOwner && (newStatus === 2 || updateData.builder !== undefined)) {
       res.status(403).json({ 
         success: false, 
         error: 'Cannot reassign task while in review - must validate (2→3) or reject (2→1) first' 
@@ -130,22 +130,22 @@ export const updateTask = async (req: Request, res: Response): Promise<void> => 
       return;
     }
 
-    // RULE 8: Owner or TaskOwner resets finished task (3 → 0)
-    if (currentStatus === 3 && (isOwner || isTaskOwner) && newStatus === 0) {
+    // RULE 8: TaskOwner resets finished task (3 → 0)
+    if (currentStatus === 3 && isTaskOwner && newStatus === 0) {
       await task.update({ builder: undefined, status: 0 });
       res.status(200).json({ success: true, data: task, message: 'Task reset to todo' });
       return;
     }
 
-    // RULE 9: Owner or TaskOwner manually reassigns builder (only if NOT in review)
-    if ((isOwner || isTaskOwner) && updateData.builder !== undefined && currentStatus !== 2) {
+    // RULE 9: TaskOwner manually reassigns builder (only if NOT in review)
+    if (isTaskOwner && updateData.builder !== undefined && currentStatus !== 2) {
       await task.update({ builder: updateData.builder || undefined });
       res.status(200).json({ success: true, data: task, message: 'Task builder updated' });
       return;
     }
 
-    // PROTECTION: Owner/TaskOwner cannot skip workflow - no direct 1→3 (must go through review)
-    if ((isOwner || isTaskOwner) && currentStatus === 1 && newStatus === 3) {
+    // PROTECTION: TaskOwner cannot skip workflow - no direct 1→3 (must go through review)
+    if (isTaskOwner && currentStatus === 1 && newStatus === 3) {
       res.status(403).json({ 
         success: false, 
         error: 'Cannot skip review process - task must go from in-progress (1) to review (2) first' 
@@ -153,8 +153,8 @@ export const updateTask = async (req: Request, res: Response): Promise<void> => 
       return;
     }
 
-    // RULE 10: Owner or TaskOwner can force any other status change (admin override, except forbidden transitions)
-    if ((isOwner || isTaskOwner) && newStatus !== undefined && newStatus !== currentStatus && 
+    // RULE 10: TaskOwner can force any other status change (admin override, except forbidden transitions)
+    if (isTaskOwner && newStatus !== undefined && newStatus !== currentStatus && 
         currentStatus !== 2 && !(currentStatus === 1 && newStatus === 3)) {
       const updateObj: any = { status: newStatus };
       
@@ -164,12 +164,12 @@ export const updateTask = async (req: Request, res: Response): Promise<void> => 
       }
       
       await task.update(updateObj);
-      res.status(200).json({ success: true, data: task, message: 'Task status updated' });
+      res.status(200).json({ success: true, data: task, message: 'Task status updated by task owner' });
       return;
     }
 
-    // RULE 11: Content updates (title, description, etc.) - Owner, TaskOwner, or assigned builder
-    if (isOwner || isTaskOwner || isAssignedBuilder) {
+    // RULE 11: Content updates (title, description, etc.) - TaskOwner or assigned builder
+    if (isTaskOwner || isAssignedBuilder) {
       const { status: _, builder: __, ...contentUpdates } = updateData;
       if (Object.keys(contentUpdates).length > 0) {
         await task.update(contentUpdates);
