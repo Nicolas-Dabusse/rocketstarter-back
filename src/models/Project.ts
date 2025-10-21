@@ -76,7 +76,7 @@ Project.init(
       defaultValue: 0,
     },
     whitelist: {
-      type: DataTypes.TEXT,
+      type: DataTypes.JSON,
       allowNull: false,
       defaultValue: '[]',
       get() {

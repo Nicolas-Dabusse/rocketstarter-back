@@ -29,7 +29,7 @@ CREATE TABLE "Project" (
   createdAt TIMESTAMP NOT NULL DEFAULT NOW(),
   updatedAt TIMESTAMP NOT NULL DEFAULT NOW(),
   owner VARCHAR(255) NOT NULL,
-  whitelist TEXT, -- JSON array of whitelisted addresses
+  whitelist TEXT '[]', -- JSON array of whitelisted addresses
   bank NUMERIC(20,8) DEFAULT 0, -- total funds raised
   CONSTRAINT fk_project_owner FOREIGN KEY (owner) REFERENCES "User"(address)
 );
@@ -77,6 +77,7 @@ CREATE TABLE "Task" (
 -- Table: Category
 CREATE TABLE "Category" (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
+  type VARCHAR(50) NOT NULL,
   name VARCHAR(255) NOT NULL
 );
 

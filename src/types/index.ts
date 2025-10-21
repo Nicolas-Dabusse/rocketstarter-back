@@ -134,6 +134,7 @@ export interface UpdateTaskRequest {
 // Category types
 export interface Category {
   id: number;
+  type: string;
   name: string;
 }
 
