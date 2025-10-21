@@ -127,6 +127,7 @@ async function seed() {
     const [task1] = await Task.findOrCreate({
       where: { title: "Setup Wallet Authentication" },
       defaults: {
+        contractAddress: "0xCONTRACT123456",
         projectId: project.id,
         taskOwner: "0xOWNER1234567890",
         stepId: step1.id,
@@ -142,6 +143,7 @@ async function seed() {
     const [task2] = await Task.findOrCreate({
       where: { title: "Project Kanban Board UI" },
       defaults: {
+        contractAddress: "0xCONTRACT123457",
         projectId: project.id,
         taskOwner: "0xOWNER1234567890",
         stepId: step1.id,
@@ -157,6 +159,7 @@ async function seed() {
     const [task3] = await Task.findOrCreate({
       where: { title: "Smart Contract Deployment" },
       defaults: {
+        contractAddress: "0xCONTRACT123458",
         projectId: project.id,
         taskOwner: "0xOWNER1234567890",
         stepId: step2.id,
@@ -172,6 +175,7 @@ async function seed() {
     const [task4] = await Task.findOrCreate({
       where: { title: "API Documentation" },
       defaults: {
+        contractAddress: "0xCONTRACT123459",
         projectId: project.id,
         taskOwner: "0xOWNER1234567890",
         stepId: step3.id,
@@ -187,6 +191,7 @@ async function seed() {
     const [task5] = await Task.findOrCreate({
       where: { title: "Token Reward System" },
       defaults: {
+        contractAddress: "0xCONTRACT123460",
         projectId: project.id,
         taskOwner: "0xOWNER1234567890",
         stepId: step2.id,
