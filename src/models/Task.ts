@@ -1,14 +1,33 @@
-import { DataTypes, Model, Optional, BelongsToManyGetAssociationsMixin, BelongsToManyAddAssociationMixin, BelongsToManyRemoveAssociationMixin } from 'sequelize';
-import type { Sequelize } from 'sequelize';
-import { sequelize } from '../config/db';
-import { Task as ITask, TaskPriority, TaskStatus } from '../types';
-import Project from './Project';
-import User from './User';
-import Category from './Category';
-import Step from './Step';
+import {
+  DataTypes,
+  Model,
+  Optional,
+  BelongsToManyGetAssociationsMixin,
+  BelongsToManyAddAssociationMixin,
+  BelongsToManyRemoveAssociationMixin,
+} from "sequelize";
+import type { Sequelize } from "sequelize";
+import { sequelize } from "../config/db";
+import { Task as ITask, TaskPriority, TaskStatus } from "../types";
+import Project from "./Project";
+import User from "./User";
+import Category from "./Category";
+import Step from "./Step";
 
 // Define the attributes for creation (optional fields, id is auto-generated)
-interface TaskCreationAttributes extends Optional<ITask, 'id' | 'createdAt' | 'updatedAt' | 'status' | 'description' | 'link' | 'builder' | 'effort' | 'priority'> {}
+interface TaskCreationAttributes
+  extends Optional<
+    ITask,
+    | "id"
+    | "createdAt"
+    | "updatedAt"
+    | "status"
+    | "description"
+    | "link"
+    | "builder"
+    | "effort"
+    | "priority"
+  > {}
 
 // Define the Task model class
 class Task extends Model<ITask, TaskCreationAttributes> implements ITask {
@@ -56,7 +75,7 @@ Task.init(
       allowNull: false,
       references: {
         model: Project,
-        key: 'id',
+        key: "id",
       },
     },
     stepId: {
@@ -64,7 +83,7 @@ Task.init(
       allowNull: true,
       references: {
         model: Step,
-        key: 'id',
+        key: "id",
       },
     },
     title: {
@@ -91,7 +110,7 @@ Task.init(
       allowNull: true,
       references: {
         model: User,
-        key: 'address',
+        key: "address",
       },
     },
     builder: {
@@ -99,7 +118,7 @@ Task.init(
       allowNull: true,
       references: {
         model: User,
-        key: 'address',
+        key: "address",
       },
     },
     createdAt: {
@@ -150,11 +169,11 @@ Task.init(
   },
   {
     sequelize,
-    modelName: 'Task',
-    tableName: 'Task',
+    modelName: "Task",
+    tableName: "Task",
     timestamps: true,
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
+    createdAt: "createdAt",
+    updatedAt: "updatedAt",
     hooks: {
       // HOOK: Force status=0 and builder=null when creating a task
       beforeCreate: async (task) => {
@@ -165,36 +184,50 @@ Task.init(
           task.builder = undefined;
         }
       },
-      
+
       // HOOK: Validate business rules before any update
       beforeUpdate: async (task) => {
         // RULE: Tasks with status=0 (todo) cannot have a builder assigned
         if (task.status === 0 && task.builder) {
-          throw new Error('Business rule violation: Task with status=0 (todo) cannot have a builder assigned');
+          throw new Error(
+            "Business rule violation: Task with status=0 (todo) cannot have a builder assigned"
+          );
         }
-        
+
         // RULE: Prevent skipping review process (1 → 3 forbidden)
-        if (task.changed('status')) {
-          const oldStatus = task.previous('status') as number;
+        if (task.changed("status")) {
+          const oldStatus = task.previous("status") as number;
           const newStatus = task.status;
-          
+
           if (oldStatus === 1 && newStatus === 3) {
-            throw new Error('Business rule violation: Cannot skip review process - task must go from in-progress (1) to review (2) first');
+            throw new Error(
+              "Business rule violation: Cannot skip review process - task must go from in-progress (1) to review (2) first"
+            );
           }
         }
-      }
-    }
+      },
+
+      // HOOK: After saving a task, recalculate the progress of the associated step
+      afterSave: async (task) => {
+        if (task.stepId) {
+          const step = await Step.findByPk(task.stepId);
+          if (step) {
+            await step.recalculateProgress();
+          }
+        }
+      },
+    },
   }
 );
 
 // Define associations
-Task.belongsTo(Project, { foreignKey: 'projectId', as: 'project' });
-Task.belongsTo(Step, { foreignKey: 'stepId', as: 'step' });
-Task.belongsTo(User, { foreignKey: 'builder', as: 'builderUser' });
-Task.belongsTo(User, { foreignKey: 'taskOwner', as: 'taskOwnerUser' });
+Task.belongsTo(Project, { foreignKey: "projectId", as: "project" });
+Task.belongsTo(Step, { foreignKey: "stepId", as: "step" });
+Task.belongsTo(User, { foreignKey: "builder", as: "builderUser" });
+Task.belongsTo(User, { foreignKey: "taskOwner", as: "taskOwnerUser" });
 
-Project.hasMany(Task, { foreignKey: 'projectId', as: 'tasks' });
-User.hasMany(Task, { foreignKey: 'builder', as: 'assignedTasks' });
-User.hasMany(Task, { foreignKey: 'taskOwner', as: 'ownedTasks' });
+Project.hasMany(Task, { foreignKey: "projectId", as: "tasks" });
+User.hasMany(Task, { foreignKey: "builder", as: "assignedTasks" });
+User.hasMany(Task, { foreignKey: "taskOwner", as: "ownedTasks" });
 
 export default Task;
