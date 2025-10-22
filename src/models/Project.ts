@@ -1,13 +1,17 @@
-import { DataTypes, Model, Optional } from 'sequelize';
-import { sequelize } from '../config/db';
-import { Project as IProject } from '../types';
-import User from './User';
+import { DataTypes, Model, Optional } from "sequelize";
+import { sequelize } from "../config/db";
+import { Project as IProject } from "../types";
+import User from "./User";
 
 // Define the attributes for creation (optional fields, id is auto-generated)
-interface ProjectCreationAttributes extends Optional<IProject, 'id' | 'createdAt' | 'updatedAt' | 'progress'> {}
+interface ProjectCreationAttributes
+  extends Optional<IProject, "id" | "createdAt" | "updatedAt" | "progress"> {}
 
 // Define the Project model class
-class Project extends Model<IProject, ProjectCreationAttributes> implements IProject {
+class Project
+  extends Model<IProject, ProjectCreationAttributes>
+  implements IProject
+{
   public id!: number;
   public name!: string;
   public progress!: number;
@@ -62,7 +66,7 @@ Project.init(
       allowNull: false,
       references: {
         model: User,
-        key: 'address',
+        key: "address",
       },
     },
     contractAddress: {
@@ -78,28 +82,39 @@ Project.init(
     whitelist: {
       type: DataTypes.JSON,
       allowNull: false,
-      defaultValue: '[]',
+      defaultValue: "[]",
       get() {
-        return this.getDataValue('whitelist');
+        return this.getDataValue("whitelist");
       },
-      set(value: string) {
-        // append to the whitelist
-        const currentWhitelist = this.getDataValue('whitelist') || [];
-        this.setDataValue('whitelist', [...currentWhitelist, value]);
-      }
-  }},
+      set(value: string[] | string) {
+        // Stocke directement un array ou parse une string JSON
+        if (Array.isArray(value)) {
+          this.setDataValue("whitelist", value);
+        } else if (typeof value === "string") {
+          try {
+            const parsed = JSON.parse(value);
+            this.setDataValue("whitelist", Array.isArray(parsed) ? parsed : []);
+          } catch {
+            this.setDataValue("whitelist", []);
+          }
+        } else {
+          this.setDataValue("whitelist", []);
+        }
+      },
+    },
+  },
   {
     sequelize,
-    modelName: 'Project',
-    tableName: 'Project',
+    modelName: "Project",
+    tableName: "Project",
     timestamps: true,
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
+    createdAt: "createdAt",
+    updatedAt: "updatedAt",
   }
 );
 
 // Define associations
-Project.belongsTo(User, { foreignKey: 'owner', as: 'ownerUser' });
-User.hasMany(Project, { foreignKey: 'owner', as: 'projects' });
+Project.belongsTo(User, { foreignKey: "owner", as: "ownerUser" });
+User.hasMany(Project, { foreignKey: "owner", as: "projects" });
 
 export default Project;
