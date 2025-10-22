@@ -32,105 +32,86 @@ async function seed() {
     console.log("🗂️ Database tables recreated with new structure");
 
     // Users
-    await User.findOrCreate({
-      where: { address: "0xOWNER1234567890" },
-      defaults: {
+    const users = [
+      {
+        address: "0xOWNER1234567890",
         role: "Owner",
         username: "AliceOwner",
         email: "alice.owner@example.com",
       },
-    });
-
-    await User.findOrCreate({
-      where: { address: "0xBUILDER111" },
-      defaults: {
+      {
+        address: "0xBUILDER111",
         role: "Builder",
         username: "BobBuilder",
         email: "bob.builder@example.com",
       },
-    });
-
-    await User.findOrCreate({
-      where: { address: "0xBUILDER222" },
-      defaults: {
+      {
+        address: "0xBUILDER222",
         role: "Builder",
         username: "CharlieBuilder",
         email: "charlie.builder@example.com",
       },
-    });
+    ];
+    for (const user of users) {
+      await User.findOrCreate({
+        where: { address: user.address },
+        defaults: user,
+      });
+    }
 
-    // Categories
-    const [categoryUIUX] = await Category.findOrCreate({
-      where: { name: "UI/UX" },
-      defaults: { name: "UI/UX", type: "general" },
-    });
-
-    const [categoryWeb3] = await Category.findOrCreate({
-      where: { name: "Web3 Integration" },
-      defaults: { name: "Web3 Integration", type: "web3" },
-    });
-
-    const [categoryBackend] = await Category.findOrCreate({
-      where: { name: "Backend" },
-      defaults: { name: "Backend", type: "backend" },
-    });
-
-    const [categoryDocs] = await Category.findOrCreate({
-      where: { name: "Documentation" },
-      defaults: { name: "Documentation", type: "documentation" },
-    });
-
-    // Project
+    // Projects
     const [project] = await Project.findOrCreate({
       where: { name: "Kudora" },
       defaults: {
         name: "Kudora",
-        description: "Plateforme de gestion de projet web2 → web3",
-        owner: "0xOWNER1234567890",
-        progress: 25.0,
+        description: "Plateforme de lancement de projets Web3",
+        ownerAddress: "0xOWNER1234567890",
       },
     });
+
+    // Categories
+    const categories = [
+      { name: "UI/UX", type: "general" },
+      { name: "Web3 Integration", type: "web3" },
+      { name: "Backend", type: "backend" },
+      { name: "Documentation", type: "documentation" },
+    ];
+    const categoryInstances: { [key: string]: any } = {};
+    for (const category of categories) {
+      const [instance] = await Category.findOrCreate({
+        where: { name: category.name },
+        defaults: category,
+      });
+      categoryInstances[category.name] = instance;
+    }
 
     // Steps
-    const [step1] = await Step.findOrCreate({
-      where: { name: "Frontend Setup" },
-      defaults: {
-        projectId: project.id,
-        name: "Frontend Setup",
-        description:
-          "Configuration initiale du frontend React avec Web3 wallet integration",
-        progress: 60.0,
-      },
-    });
-
-    const [step2] = await Step.findOrCreate({
-      where: { name: "Smart Contract Development" },
-      defaults: {
-        projectId: project.id,
-        name: "Smart Contract Development",
-        description: "Développement et déploiement des smart contracts",
-        progress: 30.0,
-      },
-    });
-
-    const [step3] = await Step.findOrCreate({
-      where: { name: "Backend API" },
-      defaults: {
-        projectId: project.id,
-        name: "Backend API",
-        description: "API REST pour la gestion des projets et tâches",
-        progress: 80.0,
-      },
-    });
+    const stepNames = [
+      "Initial Setup",
+      "Development",
+      "Deployment",
+      "Documentation",
+    ];
+    const stepInstances: { [key: string]: any } = {};
+    for (const stepName of stepNames) {
+      const [step] = await Step.findOrCreate({
+        where: { name: stepName, projectId: project.id },
+        defaults: {
+          name: stepName,
+          description: `Étape ${stepName} pour le projet Kudora`,
+          projectId: project.id,
+        },
+      });
+      stepInstances[stepName] = step;
+    }
 
     // Tasks
-    const [task1] = await Task.findOrCreate({
-      where: { title: "Setup Wallet Authentication" },
-      defaults: {
+    const tasks = [
+      {
         contractAddress: "0xCONTRACT123456",
         projectId: project.id,
         taskOwner: "0xOWNER1234567890",
-        stepId: step1.id,
+        stepName: "Initial Setup",
         title: "Setup Wallet Authentication",
         description: "Implémenter la connexion via wallet.",
         effort: "5",
@@ -138,15 +119,11 @@ async function seed() {
         status: 0,
         builder: null,
       },
-    });
-
-    const [task2] = await Task.findOrCreate({
-      where: { title: "Project Kanban Board UI" },
-      defaults: {
+      {
         contractAddress: "0xCONTRACT123457",
         projectId: project.id,
         taskOwner: "0xOWNER1234567890",
-        stepId: step1.id,
+        stepName: "Initial Setup",
         title: "Project Kanban Board UI",
         description: "Créer le drag-and-drop façon Trello.",
         effort: "2",
@@ -154,15 +131,11 @@ async function seed() {
         status: 1,
         builder: "0xBUILDER111",
       },
-    });
-
-    const [task3] = await Task.findOrCreate({
-      where: { title: "Smart Contract Deployment" },
-      defaults: {
+      {
         contractAddress: "0xCONTRACT123458",
         projectId: project.id,
         taskOwner: "0xOWNER1234567890",
-        stepId: step2.id,
+        stepName: "Development",
         title: "Smart Contract Deployment",
         description: "Déployer un smart contract simple.",
         effort: "8",
@@ -170,15 +143,11 @@ async function seed() {
         status: 2,
         builder: "0xBUILDER222",
       },
-    });
-
-    const [task4] = await Task.findOrCreate({
-      where: { title: "API Documentation" },
-      defaults: {
+      {
         contractAddress: "0xCONTRACT123459",
         projectId: project.id,
         taskOwner: "0xOWNER1234567890",
-        stepId: step3.id,
+        stepName: "Deployment",
         title: "API Documentation",
         description: "Documenter tous les endpoints API",
         effort: "1",
@@ -186,15 +155,11 @@ async function seed() {
         status: 3,
         builder: "0xBUILDER111",
       },
-    });
-
-    const [task5] = await Task.findOrCreate({
-      where: { title: "Token Reward System" },
-      defaults: {
+      {
         contractAddress: "0xCONTRACT123460",
         projectId: project.id,
         taskOwner: "0xOWNER1234567890",
-        stepId: step2.id,
+        stepName: "Development",
         title: "Token Reward System",
         description: "Implémenter le système de récompenses en tokens",
         effort: "13",
@@ -202,41 +167,55 @@ async function seed() {
         status: 0,
         builder: null,
       },
-    });
+    ];
+    const taskInstances: { [key: string]: any } = {};
+    for (const task of tasks) {
+      const [instance] = await Task.findOrCreate({
+        where: { title: task.title },
+        defaults: {
+          ...task,
+          stepId: stepInstances[task.stepName].id,
+        },
+      });
+      taskInstances[task.title] = instance;
+    }
 
     // Rewards
-    await Reward.findOrCreate({
-      where: { taskId: task1.id, type: "token" },
-      defaults: {
+    const rewards = [
+      {
         type: "token",
         value: "100",
         contractAddress: "0xTOKENADDRESS123",
         details: "100 utility tokens pour completion",
-        taskId: task1.id,
+        taskTitle: "Setup Wallet Authentication",
       },
-    });
-
-    await Reward.findOrCreate({
-      where: { taskId: task2.id, type: "nft" },
-      defaults: {
+      {
         type: "nft",
         value: "NFT-Badge-001",
         contractAddress: "0xNFTADDRESS456",
         details: "NFT exclusif pour contribution UI",
-        taskId: task2.id,
+        taskTitle: "Project Kanban Board UI",
       },
-    });
-
-    await Reward.findOrCreate({
-      where: { taskId: task3.id, type: "eth" },
-      defaults: {
+      {
         type: "eth",
         value: "0.05",
         contractAddress: null,
         details: "Bonus ETH pour déploiement smart contract",
-        taskId: task3.id,
+        taskTitle: "Smart Contract Deployment",
       },
-    });
+    ];
+    for (const reward of rewards) {
+      await Reward.findOrCreate({
+        where: {
+          taskId: taskInstances[reward.taskTitle].id,
+          type: reward.type,
+        },
+        defaults: {
+          ...reward,
+          taskId: taskInstances[reward.taskTitle].id,
+        },
+      });
+    }
 
     console.log("🌱 Seeding completed successfully!");
     await sequelize.close();
