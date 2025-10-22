@@ -258,6 +258,15 @@ export const addToWhitelist = async (
       return;
     }
 
+    const ownerAddress = req.headers["x-user-address"] as string | undefined;
+    if (!ownerAddress || ownerAddress !== project.owner) {
+      res.status(403).json({
+        success: false,
+        error: "Forbidden: only project owner can modify whitelist",
+      });
+      return;
+    }
+
     // Check if address is already in whitelist
     if (project.whitelist.includes(address)) {
       res
