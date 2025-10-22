@@ -4,7 +4,7 @@ import Project from '../models/Project';
 import User from '../models/User';
 import Task from '../models/Task';
 
-// Get all steps (Builder: tous les projects disponibles avec leurs steps)
+// Get all steps (Builder: all projects' steps and tasks)
 export const getAllSteps = async (req: Request, res: Response): Promise<void> => {
   try {
     const steps = await Step.findAll({
@@ -68,10 +68,10 @@ export const getStepsByProject = async (req: Request, res: Response): Promise<vo
 // Get steps owned by user (Owner: peut voir tous ses projets, steps et tasks)
 export const getMySteps = async (req: Request, res: Response): Promise<void> => {
   try {
-    const userWallet = req.headers.authorization; // Assuming wallet is passed in header
+    const userAddress = req.headers['x-user-address'];
 
-    if (!userWallet) {
-      res.status(401).json({ error: 'Authorization required' });
+    if (!userAddress) {
+      res.status(401).json({ error: 'User address is required' });
       return;
     }
 
@@ -80,7 +80,7 @@ export const getMySteps = async (req: Request, res: Response): Promise<void> => 
         {
           model: Project,
           as: 'project',
-          where: { owner: userWallet },
+          where: { owner: userAddress },
           include: [
             {
               model: User,
@@ -156,10 +156,10 @@ export const getStepById = async (req: Request, res: Response): Promise<void> =>
 export const createStep = async (req: Request, res: Response): Promise<void> => {
   try {
     const { projectId, name, description, progress = 0 } = req.body;
-    const userWallet = req.headers.authorization;
+    const userAddress = req.headers['x-user-address'];
 
-    if (!userWallet) {
-      res.status(401).json({ error: 'Authorization required' });
+    if (!userAddress) {
+      res.status(401).json({ error: 'User address is required' });
       return;
     }
 
@@ -175,7 +175,7 @@ export const createStep = async (req: Request, res: Response): Promise<void> => 
       return;
     }
 
-    if (project.owner !== userWallet) {
+    if (project.owner !== userAddress) {
       res.status(403).json({ error: 'Only project owner can create steps' });
       return;
     }
@@ -207,9 +207,9 @@ export const createStep = async (req: Request, res: Response): Promise<void> => 
 export const updateStep = async (req: Request, res: Response): Promise<void> => {
   try {
     const stepIdParam = req.params.id;
-    const userWallet = req.headers.authorization;
+    const userAddress = req.headers['x-user-address'];
 
-    if (!userWallet) {
+    if (!userAddress) {
       res.status(401).json({ error: 'Authorization required' });
       return;
     }
@@ -241,7 +241,7 @@ export const updateStep = async (req: Request, res: Response): Promise<void> => 
 
     // Get project to verify ownership
     const project = await Project.findByPk(step.projectId);
-    if (!project || project.owner !== userWallet) {
+    if (!project || project.owner !== userAddress) {
       res.status(403).json({ error: 'Only project owner can update steps' });
       return;
     }
@@ -275,9 +275,9 @@ export const updateStep = async (req: Request, res: Response): Promise<void> => 
 export const deleteStep = async (req: Request, res: Response): Promise<void> => {
   try {
     const stepIdParam = req.params.id;
-    const userWallet = req.headers.authorization;
+    const userAddress = req.headers['x-user-address'];
 
-    if (!userWallet) {
+    if (!userAddress) {
       res.status(401).json({ error: 'Authorization required' });
       return;
     }
@@ -302,7 +302,7 @@ export const deleteStep = async (req: Request, res: Response): Promise<void> => 
 
     // Get project to verify ownership
     const project = await Project.findByPk(step.projectId);
-    if (!project || project.owner !== userWallet) {
+    if (!project || project.owner !== userAddress) {
       res.status(403).json({ error: 'Only project owner can delete steps' });
       return;
     }
