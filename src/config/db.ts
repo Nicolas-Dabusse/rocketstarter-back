@@ -1,16 +1,16 @@
 import { createSequelizeInstance } from '../utils/database';
 
-// Initialize Sequelize instance (using SQLite)
+// Initialize Sequelize instance (using PostgreSQL)
 export const sequelize = createSequelizeInstance();
 
 // Test the database connection
 export const testConnection = async (): Promise<boolean> => {
   try {
     await sequelize.authenticate();
-    console.log('✅ SQLite database connection established successfully.');
+    console.log('✅ PostgreSQL database connection established successfully.');
     return true;
   } catch (error) {
-    console.error('❌ Unable to connect to the SQLite database:', error);
+    console.error('❌ Unable to connect to the PostgreSQL database:', error);
     return false;
   }
 };
@@ -19,9 +19,9 @@ export const testConnection = async (): Promise<boolean> => {
 export const syncDatabase = async (force: boolean = false): Promise<void> => {
   try {
     await sequelize.sync({ force });
-    console.log('✅ SQLite database synchronized successfully.');
+    console.log('✅ PostgreSQL database synchronized successfully.');
   } catch (error) {
-    console.error('❌ Error synchronizing SQLite database:', error);
+    console.error('❌ Error synchronizing PostgreSQL database:', error);
     throw error;
   }
 };
@@ -30,9 +30,9 @@ export const syncDatabase = async (force: boolean = false): Promise<void> => {
 export const closeConnection = async (): Promise<void> => {
   try {
     await sequelize.close();
-    console.log('✅ SQLite database connection closed.');
+    console.log('✅ PostgreSQL database connection closed.');
   } catch (error) {
-    console.error('❌ Error closing SQLite database connection:', error);
+    console.error('❌ Error closing PostgreSQL database connection:', error);
   }
 };
 

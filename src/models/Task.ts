@@ -208,11 +208,11 @@ Task.init(
       },
 
       // HOOK: After saving a task, recalculate the progress of the associated step
-      afterSave: async (task) => {
+      afterSave: async (task, options) => {
         if (task.stepId) {
-          const step = await Step.findByPk(task.stepId);
+          const step = await Step.findByPk(task.stepId, { transaction: options.transaction });
           if (step) {
-            await step.recalculateProgress();
+            await step.recalculateProgress(options.transaction || undefined);
           }
         }
       },

@@ -1,41 +1,77 @@
-# Node.js Application
+# RocketStarter Backend - Docker Compose Configuration
 services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: rocketstarter-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    # For debug local, uncomment temporarily:
+    # ports:
+    #   - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - rocketstarter-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Node.js Application
   app:
     build:
       context: .
       dockerfile: Dockerfile.dev
     container_name: rocketstarter-app
     restart: unless-stopped
-    environment:
-      NODE_ENV: development
-      PORT: 3000
-      SQLITE_PATH: ./data/database.sqlite
     ports:
-      - "3000:3000"
+      - "${PORT}:${PORT}"
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      PORT: ${PORT}
+      DB_DIALECT: postgres
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      JWT_SECRET: ${JWT_SECRET}
     volumes:
       - .:/app
-      - ./data:/app/data
       - /app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
     networks:
       - rocketstarter-network
-    command: npm run dev:watch
+    command: npm run dev
 
-  # SQLite Database Browser
-  sqlite-web:
-    image: coleifer/sqlite-web
-    container_name: rocketstarter-db-viewer
+  # Adminer - PostgreSQL Web Interface (Development only, remove in production)
+  adminer:
+    image: adminer:latest
+    container_name: rocketstarter-adminer
     restart: unless-stopped
     ports:
       - "8080:8080"
-    volumes:
-      - ./data:/data
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+      ADMINER_DESIGN: pepa-linha
+    depends_on:
+      - postgres
     networks:
       - rocketstarter-network
-    environment:
-      - SQLITE_DATABASE=/data/database.sqlite
-    command:
-      ["sqlite_web", "-H", "0.0.0.0", "-p", "8080", "/data/database.sqlite"]
+    profiles:
+      - dev # Use 'docker compose --profile dev up' to start Adminer
 
 networks:
   rocketstarter-network:
     driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local

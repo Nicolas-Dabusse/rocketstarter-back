@@ -1,4 +1,4 @@
-import { DataTypes, Model, Optional } from 'sequelize';
+import { DataTypes, Model, Optional, Transaction } from 'sequelize';
 import { sequelize } from '../config/db';
 import Project from './Project';
 import Task from './Task';
@@ -27,16 +27,20 @@ class Step extends Model<StepAttributes, StepCreationAttributes> implements Step
    /**
    * Calculates and updates the progress of the step based on its associated tasks.
    * Progress is defined as the percentage of tasks with status 'done' (status = 3).
+   * @param transaction - Optional transaction to use for the save operation
    */
-  public async recalculateProgress(): Promise<void> {
-    const tasks = await Task.findAll({ where: { stepId: this.id } });
+  public async recalculateProgress(transaction?: Transaction): Promise<void> {
+    const tasks = await Task.findAll({ 
+      where: { stepId: this.id },
+      transaction 
+    });
     if (tasks.length === 0) {
       this.progress = 0;
     } else {
       const doneCount = tasks.filter(task => task.status === 3).length;
       this.progress = Number(((doneCount / tasks.length) * 100).toFixed(2));
     }
-    await this.save();
+    await this.save({ transaction });
   }
 }
 

@@ -14,7 +14,7 @@ if (!fs.existsSync(dataDir)) {
 async function seed() {
   try {
     await sequelize.authenticate();
-    console.log("✅ SQLite database connected");
+    console.log("✅ PostgreSQL database connected");
 
     // Importer les modèles et la fonction d'initialisation
     const {
@@ -65,7 +65,7 @@ async function seed() {
       defaults: {
         name: "Kudora",
         description: "Plateforme de lancement de projets Web3",
-        ownerAddress: "0xOWNER1234567890",
+        owner: "0xOWNER1234567890",
       },
     });
 
