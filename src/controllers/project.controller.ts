@@ -8,22 +8,36 @@ export const createProject = async (
 ): Promise<void> => {
   try {
     const projectData: CreateProjectRequest = req.body;
+    const userAddress = req.headers['x-user-address'] as string | undefined;
+
+    // Vérification : l'utilisateur doit être authentifié
+    if (!userAddress) {
+      res.status(401).json({
+        success: false,
+        error: 'User address required in x-user-address header'
+      });
+      return;
+    }
+
     const whitelist = Array.isArray(projectData.whitelist)
       ? projectData.whitelist
       : [];
+    
+    // Le créateur du projet devient automatiquement le owner
     const project = await Project.create({
       name: projectData.name,
       description: projectData.description,
-      owner: projectData.owner,
+      owner: userAddress,
       bank: projectData.bank ?? 0,
       whitelist,
       contractAddress: projectData.contractAddress,
       twoCryptoId: projectData.twoCryptoId,
     });
+    
     res.status(201).json({
       success: true,
       data: project,
-      message: "Project created successfully",
+      message: "Project created successfully. You are now the project owner.",
     });
   } catch (error) {
     const errorMessage =
