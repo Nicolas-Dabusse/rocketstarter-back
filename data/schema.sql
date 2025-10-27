@@ -22,15 +22,15 @@ CREATE TABLE "User" (
 CREATE TABLE "Project" (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name VARCHAR(255) NOT NULL,
-  contractAddress VARCHAR(255) UNIQUE,  -- optional, for token/NFT
-  progress NUMERIC(5,2) DEFAULT 0,       -- number, could be percentage
-  twoCryptoId VARCHAR(255),              -- optional, for 2crypto integration
   description TEXT,
+  owner VARCHAR(255) NOT NULL,
+  progress INTEGER DEFAULT 0,           -- number, could be percentage
+  project_status INTEGER CHECK (project_status IN (0, 1, 2, 3)) DEFAULT 0, -- 0=planning, 1=inprogress, 2=completed, 3=archived
+  providerId VARCHAR(255),              -- optional, for 2crypto integration
   createdAt TIMESTAMP NOT NULL DEFAULT NOW(),
   updatedAt TIMESTAMP NOT NULL DEFAULT NOW(),
-  owner VARCHAR(255) NOT NULL,
-  whitelist TEXT '[]', -- JSON array of whitelisted addresses
   bank NUMERIC(20,8) DEFAULT 0, -- total funds raised
+  whitelist TEXT '[]', -- JSON array of whitelisted addresses
   CONSTRAINT fk_project_owner FOREIGN KEY (owner) REFERENCES "User"(address)
 );
   
