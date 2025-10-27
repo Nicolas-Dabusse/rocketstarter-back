@@ -20,10 +20,10 @@ class Project
   public createdAt!: Date;
   public updatedAt!: Date;
   public owner!: string;
-  public contractAddress?: string;
   public bank!: number;
   public whitelist!: string[];
-  public twoCryptoId?: string;
+  public providerId?: string;
+  public projectStatus!: 0 | 1 | 2 | 3; 
 }
 
 // Initialize the model
@@ -70,15 +70,22 @@ Project.init(
         key: "address",
       },
     },
-    contractAddress: {
-      type: DataTypes.STRING(255),
-      allowNull: true,
-      unique: true,
-    },
     bank: {
       type: DataTypes.DECIMAL(20, 8),
       allowNull: false,
       defaultValue: 0,
+    },
+    projectStatus: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+      validate: {
+        isIn: [[0, 1, 2, 3]], // 0=unspecified, 1=pending, 2=approved, 3=rejected
+      },
+    },
+    providerId: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
     },
     whitelist: {
       type: DataTypes.JSON,

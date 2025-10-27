@@ -30,8 +30,8 @@ export const createProject = async (
       owner: userAddress,
       bank: projectData.bank ?? 0,
       whitelist,
-      contractAddress: projectData.contractAddress,
-      twoCryptoId: projectData.twoCryptoId,
+      providerId: projectData.providerId ?? undefined,
+      projectStatus: projectData.projectStatus ?? 0,
     });
     
     res.status(201).json({
