@@ -39,7 +39,6 @@ export interface CreateProjectRequest {
   name: string;
   description?: string;
   owner: string;
-  categories?: string[];
   bank: number;
   whitelist: string[];
   providerId?: string;
@@ -51,9 +50,9 @@ export interface UpdateProjectRequest {
   progress?: number;
   description?: string;
   bank?: number;
-  whitelist?: string[];
+  whitelist: string[];
   providerId?: string;
-  categories?: string[];
+  projectStatus?: 0 | 1 | 2 | 3;
 }
 
 export interface Step {
