@@ -24,16 +24,18 @@ export interface UpdateUserRequest {
 export interface Project {
   id: number;
   name: string;
-  progress: number; // percentage 0-100
   description?: string;
+  owner: string; // User address
+  progress: number; // percentage 0-100
+  projectStatus: 0 | 1 | 2 | 3; // 0=unspecified, 1=pending, 2=approved, 3=rejected
+  providerId?: string;
   createdAt: Date;
   updatedAt: Date;
-  owner: string; // User address
-  contractAddress?: string;
-  categories?: string[]; // array of category names
   bank: number;
   whitelist: string[]; // array of whitelisted addresses
-  providerId?: string;
+  tasks: Task[];
+  categories: Category[];
+  steps: Step[];
 }
 
 export interface CreateProjectRequest {
@@ -56,6 +58,16 @@ export interface UpdateProjectRequest {
   contractAddress?: string;
   providerId?: string;
   categories?: string[];
+}
+
+export interface Step {
+  id: number;
+  projectId: number;
+  name: string;
+  description?: string;
+  progress: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 // Task types

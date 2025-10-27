@@ -2,16 +2,7 @@ import { DataTypes, Model, Optional, Transaction } from 'sequelize';
 import { sequelize } from '../config/db';
 import Project from './Project';
 import Task from './Task';
-
-export interface StepAttributes {
-  id: number;
-  projectId: number;
-  name: string;
-  description?: string;
-  progress: number;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import { Step as StepAttributes } from '../types';
 
 interface StepCreationAttributes extends Optional<StepAttributes, 'id' | 'progress' | 'createdAt' | 'updatedAt' | 'description'> {}
 
