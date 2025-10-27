@@ -114,9 +114,4 @@ Project.init(
   }
 );
 
-// Define associations
-Project.belongsTo(User, { foreignKey: "owner", as: "ownerUser" });
-Project.hasMany(Step, { foreignKey: "projectId", as: "steps" });
-User.hasMany(Project, { foreignKey: "owner", as: "projects" });
-
 export default Project;

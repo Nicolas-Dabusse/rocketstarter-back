@@ -70,7 +70,4 @@ Reward.init(
   }
 );
 
-Task.hasMany(Reward, { foreignKey: 'taskId', as: 'rewards' });
-Reward.belongsTo(Task, { foreignKey: 'taskId', as: 'task' });
-
 export default Reward;

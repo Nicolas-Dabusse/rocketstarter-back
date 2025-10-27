@@ -220,14 +220,4 @@ Task.init(
   }
 );
 
-// Define associations
-Task.belongsTo(Project, { foreignKey: "projectId", as: "project" });
-Task.belongsTo(Step, { foreignKey: "stepId", as: "step" });
-Task.belongsTo(User, { foreignKey: "builder", as: "builderUser" });
-Task.belongsTo(User, { foreignKey: "taskOwner", as: "taskOwnerUser" });
-
-Project.hasMany(Task, { foreignKey: "projectId", as: "tasks" });
-User.hasMany(Task, { foreignKey: "builder", as: "assignedTasks" });
-User.hasMany(Task, { foreignKey: "taskOwner", as: "ownedTasks" });
-
 export default Task;
