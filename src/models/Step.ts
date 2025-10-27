@@ -94,5 +94,6 @@ Step.init(
 
 // Define associations
 Step.belongsTo(Project, { foreignKey: 'projectId', as: 'project' });
+Step.hasMany(Task, { foreignKey: 'stepId', as: 'tasks' });
 
 export default Step;

@@ -2,6 +2,7 @@ import { DataTypes, Model, Optional } from "sequelize";
 import { sequelize } from "../config/db";
 import { Project as IProject } from "../types";
 import User from "./User";
+import Step from "./Step";
 
 // Define the attributes for creation (optional fields, id is auto-generated)
 interface ProjectCreationAttributes
@@ -115,6 +116,7 @@ Project.init(
 
 // Define associations
 Project.belongsTo(User, { foreignKey: "owner", as: "ownerUser" });
+Project.hasMany(Step, { foreignKey: "projectId", as: "steps" });
 User.hasMany(Project, { foreignKey: "owner", as: "projects" });
 
 export default Project;
