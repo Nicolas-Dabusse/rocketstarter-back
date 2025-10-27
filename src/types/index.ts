@@ -33,17 +33,18 @@ export interface Project {
   categories?: string[]; // array of category names
   bank: number;
   whitelist: string[]; // array of whitelisted addresses
-  twoCryptoId?: string;
+  providerId?: string;
 }
 
 export interface CreateProjectRequest {
   name: string;
   description?: string;
   owner: string;
+  categories?: string[];
   bank: number;
   whitelist: string[];
   contractAddress?: string;
-  twoCryptoId?: string;
+  providerId?: string;
 }
 
 export interface UpdateProjectRequest {
@@ -53,7 +54,8 @@ export interface UpdateProjectRequest {
   bank?: number;
   whitelist?: string[];
   contractAddress?: string;
-  twoCryptoId?: string;
+  providerId?: string;
+  categories?: string[];
 }
 
 // Task types
