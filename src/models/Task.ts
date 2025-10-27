@@ -6,7 +6,6 @@ import {
   BelongsToManyAddAssociationMixin,
   BelongsToManyRemoveAssociationMixin,
 } from "sequelize";
-import type { Sequelize } from "sequelize";
 import { sequelize } from "../config/db";
 import { Task as ITask, TaskPriority, TaskStatus } from "../types";
 import Project from "./Project";
@@ -32,7 +31,6 @@ interface TaskCreationAttributes
 // Define the Task model class
 class Task extends Model<ITask, TaskCreationAttributes> implements ITask {
   public id!: number;
-  public contractAddress?: string;
   public projectId!: number;
   public stepId?: number;
   public title!: string;
@@ -65,10 +63,6 @@ Task.init(
       primaryKey: true,
       autoIncrement: true,
       allowNull: false,
-    },
-    contractAddress: {
-      type: DataTypes.STRING(255),
-      allowNull: true,
     },
     projectId: {
       type: DataTypes.INTEGER,

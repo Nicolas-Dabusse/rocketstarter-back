@@ -33,7 +33,6 @@ export const createTask = async (req: Request, res: Response): Promise<void> => 
       projectId: taskData.projectId,
       stepId: taskData.stepId,
       title: taskData.title,
-      contractAddress: taskData.contractAddress,
       image: taskData.image,
       description: taskData.description,
       link: taskData.link,

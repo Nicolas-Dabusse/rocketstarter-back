@@ -86,7 +86,6 @@ export const TaskStatusLabel: Record<TaskStatus, string> = {
 
 export interface Task {
   id: number;
-  contractAddress?: string;
   projectId: number;
   stepId?: number;
   title: string;
@@ -110,7 +109,6 @@ export interface CreateTaskRequest {
   projectId: number;
   stepId?: number;
   title: string;
-  contractAddress?: string;
   image?: string;
   description?: string;
   link?: string;
@@ -127,7 +125,6 @@ export interface CreateTaskRequest {
 export interface UpdateTaskRequest {
   stepId?: number;
   title?: string;
-  contractAddress?: string;
   image?: string;
   description?: string;
   link?: string;
