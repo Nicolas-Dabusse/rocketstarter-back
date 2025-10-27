@@ -25,6 +25,7 @@ router.delete('/api/v1/users/:address', userController.deleteUser);
 router.post('/api/v1/projects', projectController.createProject);
 router.get('/api/v1/projects', projectController.getAllProjects);
 router.get('/api/v1/projects/:id', projectController.getProjectById);
+router.get('/api/v1/projects/owner/:owner', projectController.getProjectsByOwner);
 router.put('/api/v1/projects/:id', projectController.updateProject);
 router.post('/api/v1/projects/:id/whitelist', projectController.addToWhitelist);
 router.delete('/api/v1/projects/:id', projectController.deleteProject);
