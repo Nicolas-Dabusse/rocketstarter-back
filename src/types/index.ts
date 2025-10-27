@@ -30,6 +30,7 @@ export interface Project {
   updatedAt: Date;
   owner: string; // User address
   contractAddress?: string;
+  categories?: string[]; // array of category names
   bank: number;
   whitelist: string[]; // array of whitelisted addresses
   twoCryptoId?: string;
