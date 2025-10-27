@@ -51,8 +51,8 @@ CREATE TABLE "Step" (
 -- Table: Task
 CREATE TABLE "Task" (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  contractAddress VARCHAR(255),
   projectId INTEGER NOT NULL,
+  stepId INTEGER NOT NULL,
   title VARCHAR(255) NOT NULL,
   image VARCHAR(512),
   description TEXT,
