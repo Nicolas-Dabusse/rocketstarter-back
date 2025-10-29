@@ -24,6 +24,7 @@ export interface UpdateUserRequest {
 export interface Project {
   id: number;
   name: string;
+  slug: string;
   description?: string;
   owner: string; // User address
   progress: number; // percentage 0-100
@@ -32,14 +33,17 @@ export interface Project {
   createdAt: Date;
   updatedAt: Date;
   bank: number;
+  logo?: string;
   whitelist: string[]; // array of whitelisted addresses
 }
 
 export interface CreateProjectRequest {
   name: string;
+  slug?: string;
   description?: string;
   owner: string;
   bank: number;
+  logo?: string;
   whitelist: string[];
   providerId?: string;
   projectStatus?: 0 | 1 | 2 | 3;
@@ -47,9 +51,11 @@ export interface CreateProjectRequest {
 
 export interface UpdateProjectRequest {
   name?: string;
+  slug?: string;
   progress?: number;
   description?: string;
   bank?: number;
+  logo?: string;
   whitelist: string[];
   providerId?: string;
   projectStatus?: 0 | 1 | 2 | 3;

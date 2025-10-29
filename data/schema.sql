@@ -22,15 +22,17 @@ CREATE TABLE "User" (
 CREATE TABLE "Project" (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name VARCHAR(255) NOT NULL,
+  slug VARCHAR(255) NOT NULL UNIQUE,    -- URL-friendly unique identifier
   description TEXT,
   owner VARCHAR(255) NOT NULL,
-  progress INTEGER DEFAULT 0,           -- number, could be percentage
-  project_status INTEGER CHECK (project_status IN (0, 1, 2, 3)) DEFAULT 0, -- 0=planning, 1=inprogress, 2=completed, 3=archived
+  progress NUMERIC(5,2) DEFAULT 0,      -- percentage 0-100
+  projectStatus INTEGER CHECK (projectStatus IN (0, 1, 2, 3)) DEFAULT 0, -- 0=unspecified, 1=pending, 2=approved, 3=rejected
   providerId VARCHAR(255),              -- optional, for 2crypto integration
   createdAt TIMESTAMP NOT NULL DEFAULT NOW(),
   updatedAt TIMESTAMP NOT NULL DEFAULT NOW(),
-  bank NUMERIC(20,8) DEFAULT 0, -- total funds raised
-  whitelist TEXT '[]', -- JSON array of whitelisted addresses
+  bank NUMERIC(20,8) DEFAULT 0,         -- total funds raised
+  logo VARCHAR(255),                    -- URL to project logo image
+  whitelist TEXT DEFAULT '[]',          -- JSON array of whitelisted addresses
   CONSTRAINT fk_project_owner FOREIGN KEY (owner) REFERENCES "User"(address)
 );
   

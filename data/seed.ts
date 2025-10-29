@@ -61,11 +61,13 @@ async function seed() {
 
     // Projects
     const [project] = await Project.findOrCreate({
-      where: { name: "Kudora" },
+      where: { slug: "kudora" },
       defaults: {
         name: "Kudora",
+        slug: "kudora",
         description: "Plateforme de lancement de projets Web3",
         owner: "0xOWNER1234567890",
+        logo: "https://example.com/kudora-logo.png",
       },
     });
 

@@ -24,9 +24,10 @@ router.delete('/api/v1/users/:address', userController.deleteUser);
 // Project endpoints
 router.post('/api/v1/projects', projectController.createProject);
 router.get('/api/v1/projects', projectController.getAllProjects);
-router.get('/api/v1/projects/:id', projectController.getProjectById);
+router.get('/api/v1/projects/slug/:slug', projectController.getProjectBySlug); // Avant /projects/:id pour éviter les conflits
 router.get('/api/v1/projects/owner/:owner', projectController.getProjectsByOwner);
-router.put('/api/v1/projects/:id', projectController.updateProject);
+router.get('/api/v1/projects/:id', projectController.getProjectById);
+router.patch('/api/v1/projects/:id', projectController.updateProject);
 router.post('/api/v1/projects/:id/whitelist', projectController.addToWhitelist);
 router.delete('/api/v1/projects/:id', projectController.deleteProject);
 router.delete('/api/v1/projects/:id/whitelist', projectController.removeFromWhitelist);
@@ -35,7 +36,7 @@ router.delete('/api/v1/projects/:id/whitelist', projectController.removeFromWhit
 router.post('/api/v1/tasks', taskController.createTask);
 router.get('/api/v1/tasks', taskController.getAllTasks);
 router.get('/api/v1/tasks/:id', taskController.getTaskById);
-router.put('/api/v1/tasks/:id', updateTask); // Utilise le contrôleur séparé
+router.put('/api/v1/tasks/:id', updateTask);
 router.delete('/api/v1/tasks/:id', taskController.deleteTask);
 
 // Step endpoints

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { Project, User, Task } from "../models";
 import { CreateProjectRequest, UpdateProjectRequest } from "../types";
+import { generateSlug, generateUniqueSlug } from "../utils/slugGenerator";
 
 export const createProject = async (
   req: Request,
@@ -23,12 +24,18 @@ export const createProject = async (
       ? projectData.whitelist
       : [];
     
+    // Générer le slug automatiquement si absent
+    const baseSlug = projectData.slug || generateSlug(projectData.name);
+    const uniqueSlug = await generateUniqueSlug(baseSlug, Project);
+    
     // Le créateur du projet devient automatiquement le owner
     const project = await Project.create({
       name: projectData.name,
+      slug: uniqueSlug,
       description: projectData.description,
       owner: userAddress,
       bank: projectData.bank ?? 0,
+      logo: projectData.logo ?? undefined,
       whitelist,
       providerId: projectData.providerId ?? undefined,
       projectStatus: projectData.projectStatus ?? 0,
@@ -182,6 +189,65 @@ export const getProjectsByOwner = async (
   }
 };
 
+export const getProjectBySlug = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { slug } = req.params;
+
+    if (!slug) {
+      res.status(400).json({
+        success: false,
+        error: "Project slug is required",
+      });
+      return;
+    }
+
+    const project = await Project.findOne({
+      where: { slug },
+      include: [
+        {
+          model: User,
+          as: "ownerUser",
+          attributes: ["address", "username", "role"],
+        },
+        {
+          model: Task,
+          as: "tasks",
+          include: [
+            {
+              model: User,
+              as: "builderUser",
+              attributes: ["address", "username"],
+            },
+          ],
+        },
+      ],
+    });
+
+    if (!project) {
+      res.status(404).json({
+        success: false,
+        error: "Project not found",
+      });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      data: project,
+    });
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
+    res.status(500).json({
+      success: false,
+      error: errorMessage,
+    });
+  }
+};
+
 export const updateProject = async (
   req: Request,
   res: Response
@@ -198,11 +264,23 @@ export const updateProject = async (
       res.status(400).json({ success: false, error: "Invalid project ID" });
       return;
     }
+    
     // Préparer les données à mettre à jour
     const updateFields: any = { ...updateData };
+    
+    // Si le slug est modifié ou si le nom change, régénérer le slug
+    if (updateData.slug) {
+      const baseSlug = generateSlug(updateData.slug);
+      updateFields.slug = await generateUniqueSlug(baseSlug, Project, projectId);
+    } else if (updateData.name) {
+      // Si le nom change mais pas le slug, on peut choisir de régénérer ou non
+      // Pour l'instant, on ne régénère que si explicitement demandé
+    }
+    
     if (updateData.whitelist) {
       updateFields.whitelist = updateData.whitelist;
     }
+    
     const [updatedRowsCount] = await Project.update(updateFields, {
       where: { id: projectId },
     });

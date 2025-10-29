@@ -15,12 +15,14 @@ class Project
 {
   public id!: number;
   public name!: string;
+  public slug!: string;
   public progress!: number;
   public description?: string;
   public createdAt!: Date;
   public updatedAt!: Date;
   public owner!: string;
   public bank!: number;
+  public logo?: string;
   public whitelist!: string[];
   public providerId?: string;
   public projectStatus!: 0 | 1 | 2 | 3; 
@@ -38,6 +40,11 @@ Project.init(
     name: {
       type: DataTypes.STRING(255),
       allowNull: false,
+    },
+    slug: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+      unique: true,
     },
     progress: {
       type: DataTypes.DECIMAL(5, 2),
@@ -74,6 +81,10 @@ Project.init(
       type: DataTypes.DECIMAL(20, 8),
       allowNull: false,
       defaultValue: 0,
+    },
+    logo: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
     },
     projectStatus: {
       type: DataTypes.INTEGER,
