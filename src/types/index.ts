@@ -24,6 +24,7 @@ export interface UpdateUserRequest {
 export interface Project {
   id: number;
   name: string;
+  slug: string;
   description?: string;
   owner: string; // User address
   progress: number; // percentage 0-100
@@ -38,6 +39,7 @@ export interface Project {
 
 export interface CreateProjectRequest {
   name: string;
+  slug?: string;
   description?: string;
   owner: string;
   bank: number;
@@ -49,6 +51,7 @@ export interface CreateProjectRequest {
 
 export interface UpdateProjectRequest {
   name?: string;
+  slug?: string;
   progress?: number;
   description?: string;
   bank?: number;
