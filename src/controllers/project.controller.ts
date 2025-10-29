@@ -29,6 +29,7 @@ export const createProject = async (
       description: projectData.description,
       owner: userAddress,
       bank: projectData.bank ?? 0,
+      logo: projectData.logo ?? undefined,
       whitelist,
       providerId: projectData.providerId ?? undefined,
       projectStatus: projectData.projectStatus ?? 0,

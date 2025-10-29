@@ -32,6 +32,7 @@ export interface Project {
   createdAt: Date;
   updatedAt: Date;
   bank: number;
+  logo?: string;
   whitelist: string[]; // array of whitelisted addresses
 }
 
@@ -40,6 +41,7 @@ export interface CreateProjectRequest {
   description?: string;
   owner: string;
   bank: number;
+  logo?: string;
   whitelist: string[];
   providerId?: string;
   projectStatus?: 0 | 1 | 2 | 3;
@@ -50,6 +52,7 @@ export interface UpdateProjectRequest {
   progress?: number;
   description?: string;
   bank?: number;
+  logo?: string;
   whitelist: string[];
   providerId?: string;
   projectStatus?: 0 | 1 | 2 | 3;

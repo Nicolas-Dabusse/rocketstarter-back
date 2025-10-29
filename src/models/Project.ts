@@ -75,6 +75,10 @@ Project.init(
       allowNull: false,
       defaultValue: 0,
     },
+    logo: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
     projectStatus: {
       type: DataTypes.INTEGER,
       allowNull: false,

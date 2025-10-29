@@ -35,7 +35,7 @@ router.delete('/api/v1/projects/:id/whitelist', projectController.removeFromWhit
 router.post('/api/v1/tasks', taskController.createTask);
 router.get('/api/v1/tasks', taskController.getAllTasks);
 router.get('/api/v1/tasks/:id', taskController.getTaskById);
-router.put('/api/v1/tasks/:id', updateTask); // Utilise le contrôleur séparé
+router.put('/api/v1/tasks/:id', updateTask);
 router.delete('/api/v1/tasks/:id', taskController.deleteTask);
 
 // Step endpoints
