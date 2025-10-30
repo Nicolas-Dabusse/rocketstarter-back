@@ -182,7 +182,11 @@ Task.init(
       // HOOK: Validate business rules before any update
       beforeUpdate: async (task) => {
         // RULE: Tasks with status=0 (todo) cannot have a builder assigned
-        if (task.status === 0 && task.builder) {
+        // EXCEPTION: Allow if builder is being cleared (transition to status 0)
+        const builderIsBeingCleared = task.changed('builder') && (task.builder === null || task.builder === undefined);
+        const statusIsChangingToTodo = task.changed('status') && task.status === 0;
+        
+        if (task.status === 0 && task.builder && !builderIsBeingCleared && !statusIsChangingToTodo) {
           throw new Error(
             "Business rule violation: Task with status=0 (todo) cannot have a builder assigned"
           );

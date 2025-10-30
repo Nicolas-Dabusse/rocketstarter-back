@@ -52,9 +52,10 @@ export const updateTask = async (
 
     // AUTO-FIX: If task is status=0 but has a builder, clean it up
     if (currentStatus === 0 && currentBuilder) {
-      await task.update({ builder: undefined });
+      task.setDataValue('builder', null as any);
+      task.setDataValue('claimedAt', null as any);
+      await task.save();
       await task.reload();
-      task.builder = undefined; // Update local object
     }
 
     // RULE 1: Builder claims free task (0 → 1)
@@ -74,7 +75,10 @@ export const updateTask = async (
 
     // RULE 2: Builder releases their task (1 → 0)
     if (currentStatus === 1 && isAssignedBuilder && newStatus === 0) {
-      await task.update({ builder: undefined, status: 0 });
+      task.setDataValue('builder', null as any);
+      task.setDataValue('status', 0);
+      task.setDataValue('claimedAt', null as any);
+      await task.save();
       await task.reload();
       res
         .status(200)
@@ -112,7 +116,10 @@ export const updateTask = async (
 
     // RULE 5: Builder releases from review back to todo (2 → 0)
     if (currentStatus === 2 && isAssignedBuilder && newStatus === 0) {
-      await task.update({ builder: undefined, status: 0 });
+      task.setDataValue('builder', null as any);
+      task.setDataValue('status', 0);
+      task.setDataValue('claimedAt', null as any);
+      await task.save();
       await task.reload();
       res
         .status(200)
@@ -184,7 +191,10 @@ export const updateTask = async (
 
     // RULE 8: TaskOwner resets finished task (3 → 0)
     if (currentStatus === 3 && isTaskOwner && newStatus === 0) {
-      await task.update({ builder: undefined, status: 0 });
+      task.setDataValue('builder', null as any);
+      task.setDataValue('status', 0);
+      task.setDataValue('claimedAt', null as any);
+      await task.save();
       await task.reload();
       res
         .status(200)
@@ -224,11 +234,12 @@ export const updateTask = async (
       currentStatus !== 2 &&
       !(currentStatus === 1 && newStatus === 3)
     ) {
-      const updateObj: any = { status: newStatus };
+      task.setDataValue('status', newStatus);
       if (newStatus === 0) {
-        updateObj.builder = undefined;
+        task.setDataValue('builder', null as any);
+        task.setDataValue('claimedAt', null as any);
       }
-      await task.update(updateObj);
+      await task.save();
       await task.reload();
       res
         .status(200)
