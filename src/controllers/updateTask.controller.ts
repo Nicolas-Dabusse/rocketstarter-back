@@ -189,18 +189,18 @@ export const updateTask = async (
       return;
     }
 
-    // RULE 8: TaskOwner resets finished task (3 → 0)
-    if (currentStatus === 3 && isTaskOwner && newStatus === 0) {
-      task.setDataValue('builder', null as any);
-      task.setDataValue('status', 0);
-      task.setDataValue('claimedAt', null as any);
-      await task.save();
-      await task.reload();
-      res
-        .status(200)
-        .json({ success: true, data: task, message: "Task reset to todo" });
-      return;
-    }
+    // // RULE 8: TaskOwner resets finished task (3 → 0)
+    // if (currentStatus === 3 && isTaskOwner && newStatus === 0) {
+    //   task.setDataValue('builder', null as any);
+    //   task.setDataValue('status', 0);
+    //   task.setDataValue('claimedAt', null as any);
+    //   await task.save();
+    //   await task.reload();
+    //   res
+    //     .status(200)
+    //     .json({ success: true, data: task, message: "Task reset to todo" });
+    //   return;
+    // }
 
     // RULE 9: TaskOwner manually reassigns builder (only if NOT in review)
     if (
