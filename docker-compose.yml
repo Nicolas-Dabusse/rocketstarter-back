@@ -17,7 +17,9 @@ services:
     networks:
       - rocketstarter-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      # Test the actual configured database name to avoid pg_isready defaulting
+      # to a database with the same name as the user (which may not exist).
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
       interval: 10s
       timeout: 5s
       retries: 5
