@@ -6,6 +6,9 @@ import * as projectController from '../controllers/project.controller';
 import * as taskController from '../controllers/task.controller';
 import * as stepController from '../controllers/step.controller';
 import { updateTask } from '../controllers/updateTask.controller';
+import { requestChallenge } from '../controllers/auth.controllers/challenge.controller';
+import { verifySignature } from '../controllers/auth.controllers/verification.controller';
+import { getCurrentUser } from '../controllers/auth.controllers/authUser.controller';
 
 const router = Router();
 
@@ -13,6 +16,11 @@ const router = Router();
 router.get('/health', healthCheck);
 router.get('/db-test', databaseTest);
 router.get('/api/v1', apiInfo);
+
+// Authentication endpoints (public - no JWT required yet)
+router.post('/api/v1/auth/challenge', requestChallenge);
+router.post('/api/v1/auth/verify', verifySignature);
+router.get('/api/v1/auth/me', getCurrentUser);
 
 // User endpoints
 router.post('/api/v1/users', userController.createUser);
