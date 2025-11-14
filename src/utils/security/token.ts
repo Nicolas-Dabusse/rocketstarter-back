@@ -47,7 +47,7 @@ const JWT = {
         token: this.sign(payload),
         type,
         expiresAt: this.createExpirationDate(),
-        expiresIn: expiresIn as string,
+        expiresIn: String(expiresIn), // ✅ FIX 1: Convert to string explicitly
       },
     };
   },
@@ -58,12 +58,14 @@ const JWT = {
    * @returns Signed JWT string
    */
   sign(payload: JwtPayload): string {
-    return jwt.sign(payload, secret, {
+    const options: jwt.SignOptions = {
       algorithm,
       audience,
-      expiresIn,
       issuer,
-    });
+      ...(expiresIn && { expiresIn: expiresIn as any }),
+    };
+
+    return jwt.sign(payload, secret, options);
   },
 
   /**
@@ -101,7 +103,9 @@ const JWT = {
     if (typeof expiresIn === 'string') {
       // Parse string format like "24h", "7d", etc.
       const match = expiresIn.match(/^(\d+)([smhd])$/);
-      if (!match) return new Date(Date.now() + 24 * 60 * 60 * 1000); // Default 24h
+      if (!match || !match[1] || !match[2]) {
+        return new Date(Date.now() + 24 * 60 * 60 * 1000); // Default 24h
+      }
 
       const value = parseInt(match[1], 10);
       const unit = match[2];
@@ -113,11 +117,19 @@ const JWT = {
         d: 24 * 60 * 60 * 1000,
       };
 
-      return new Date(Date.now() + value * multipliers[unit]);
+      const multiplier = multipliers[unit];
+      if (!multiplier) return new Date(Date.now() + 24 * 60 * 60 * 1000); // Safety fallback
+
+      return new Date(Date.now() + value * multiplier);
     }
 
     // Handle number format (milliseconds)
-    return new Date(Date.now() + expiresIn);
+    if (typeof expiresIn === 'number') {
+      return new Date(Date.now() + expiresIn);
+    }
+
+    // Fallback for undefined
+    return new Date(Date.now() + 24 * 60 * 60 * 1000);
   },
 };
 

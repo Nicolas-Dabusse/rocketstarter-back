@@ -22,6 +22,15 @@ export const getCurrentUser = async (
     }
 
     const token = authHeader.split(' ')[1];
+    
+    if (!token) {
+      res.status(401).json({
+        success: false,
+        error: 'Invalid token format',
+      });
+      return;
+    }
+
     const userData = await authService.getUserFromToken(token);
 
     res.json({

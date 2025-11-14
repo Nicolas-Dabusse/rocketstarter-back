@@ -178,3 +178,22 @@ export interface ApiInfo {
     api: string;
   };
 }
+
+// JWT Payload type (imported from utils/security/token.ts)
+export interface JwtPayload {
+  address: string;
+  role: 'Owner' | 'Builder';
+  email?: string;
+  username?: string;
+  iat?: number; // Issued at (timestamp)
+  exp?: number; // Expiration (timestamp)
+}
+
+// Extend Express Request to include authenticated user
+declare global {
+  namespace Express {
+    interface Request {
+      user?: JwtPayload;
+    }
+  }
+}
