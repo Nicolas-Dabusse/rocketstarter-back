@@ -95,9 +95,6 @@ Task.init(
     link: {
       type: DataTypes.STRING(512),
       allowNull: true,
-      validate: {
-        isUrl: true,
-      },
     },
     taskOwner: {
       type: DataTypes.STRING(255),
