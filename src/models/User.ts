@@ -14,7 +14,7 @@ export enum UserRole {
 
 @Table({
   tableName: 'User',
-  timestamps: false, // We handle createdAt manually
+  timestamps: false,
 })
 export class User extends Model {
   @PrimaryKey
