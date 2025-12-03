@@ -38,6 +38,9 @@ export class Project extends Model {
   @Column({
     type: DataType.STRING(255),
     allowNull: false,
+    validate: {
+      len: [3, 255],
+    },
   })
   name: string;
 
@@ -45,6 +48,10 @@ export class Project extends Model {
   @Column({
     type: DataType.STRING(255),
     allowNull: false,
+    validate: {
+      len: [3, 255],
+      is: /^[a-z0-9-]+$/i, // Slug format: alphanumeric + hyphens
+    },
   })
   slug: string;
 
@@ -83,18 +90,25 @@ export class Project extends Model {
   @Column({
     type: DataType.STRING(255),
     allowNull: false,
+    validate: {
+      notEmpty: true,
+    },
   })
   owner: string;
 
   @BelongsTo(() => User)
   ownerUser: User;
 
-  @Default(0)
+  // Bank as string to preserve DECIMAL precision (crypto amounts)
+  @Default('0')
   @Column({
     type: DataType.DECIMAL(20, 8),
     allowNull: false,
+    validate: {
+      min: 0,
+    },
   })
-  bank: number;
+  bank: string;
 
   @AllowNull(true)
   @Column({
@@ -118,27 +132,47 @@ export class Project extends Model {
   })
   providerId?: string;
 
+  // Whitelist: normalized to lowercase for Ethereum addresses
   @Default([])
   @Column({
     type: DataType.JSON,
     allowNull: false,
     get() {
-      const value = this.getDataValue('whitelist') as string[] | null;
-      return value || [];
-    },
-    set(value: string[] | string) {
-      if (Array.isArray(value)) {
-        this.setDataValue('whitelist', value);
-      } else if (typeof value === 'string') {
-        try {
-          const parsed = JSON.parse(value) as unknown;
-          this.setDataValue('whitelist', Array.isArray(parsed) ? parsed : []);
-        } catch {
-          this.setDataValue('whitelist', []);
-        }
-      } else {
-        this.setDataValue('whitelist', []);
+      const raw = this.getDataValue('whitelist') as unknown;
+
+      if (Array.isArray(raw)) {
+        return raw.map((v) => String(v).toLowerCase());
       }
+
+      if (typeof raw === 'string') {
+        try {
+          const parsed = JSON.parse(raw) as unknown;
+          return Array.isArray(parsed)
+            ? parsed.map((v) => String(v).toLowerCase())
+            : [];
+        } catch {
+          return [];
+        }
+      }
+
+      return [];
+    },
+    set(value: string[] | string | null | undefined) {
+      const toArray = (v: unknown): string[] => {
+        if (Array.isArray(v)) return v.map((x) => String(x));
+        if (typeof v === 'string') {
+          try {
+            const parsed = JSON.parse(v) as unknown;
+            return Array.isArray(parsed) ? parsed.map((x) => String(x)) : [];
+          } catch {
+            return [];
+          }
+        }
+        return [];
+      };
+
+      const normalized = toArray(value).map((v) => v.toLowerCase());
+      this.setDataValue('whitelist', normalized as any);
     },
   })
   whitelist: string[];
