@@ -5,6 +5,8 @@ import { Task } from '../models/Task';
 import { Step } from '../models/Step';
 import { Category } from '../models/Category';
 import { Reward } from '../models/Reward';
+import { TaskCategory } from '../models/TaskCategory';
+import { ProjectCategory } from '../models/ProjectCategory';
 
 export const databaseProviders = [
   {
@@ -54,7 +56,16 @@ export const databaseProviders = [
       });
 
       // Register models
-      sequelize.addModels([User, Project, Task, Step, Category, Reward]);
+      sequelize.addModels([
+        User,
+        Project,
+        Task,
+        Step,
+        Category,
+        Reward,
+        TaskCategory,
+        ProjectCategory,
+      ]);
 
       // Sync database (dev only - use migrations in prod)
       if (process.env.NODE_ENV === 'development') {

@@ -7,6 +7,7 @@ import {
   DataType,
   ForeignKey,
   BelongsTo,
+  BelongsToMany,
   CreatedAt,
   UpdatedAt,
   Default,
@@ -14,6 +15,8 @@ import {
   Unique,
 } from 'sequelize-typescript';
 import { User } from './User';
+import { Category } from './Category';
+import { ProjectCategory } from './ProjectCategory';
 
 export enum ProjectStatus {
   UNSPECIFIED = 0,
@@ -176,4 +179,8 @@ export class Project extends Model {
     },
   })
   whitelist: string[];
+
+  // Many-to-Many relation with Category
+  @BelongsToMany(() => Category, () => ProjectCategory)
+  categories: Category[];
 }

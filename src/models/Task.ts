@@ -8,6 +8,7 @@ import {
   ForeignKey,
   BelongsTo,
   BelongsToMany,
+  HasMany,
   CreatedAt,
   UpdatedAt,
   Default,
@@ -21,6 +22,7 @@ import { Step } from './Step';
 import { User } from './User';
 import { Category } from './Category';
 import { TaskCategory } from './TaskCategory';
+import { Reward } from './Reward';
 
 export enum TaskStatus {
   TODO = 0,
@@ -197,6 +199,10 @@ export class Task extends Model {
   // Many-to-Many relation with Category
   @BelongsToMany(() => Category, () => TaskCategory)
   categories: Category[];
+
+  // One-to-Many relation with Reward
+  @HasMany(() => Reward)
+  rewards: Reward[];
 
   // ==================== HOOKS ====================
 
