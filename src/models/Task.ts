@@ -262,13 +262,16 @@ export class Task extends Model {
    * HOOK: Recalculate step progress after saving a task
    */
   @AfterSave
-  static async recalculateStepProgress(task: Task, options: any) {
+  static async recalculateStepProgress(
+    task: Task,
+    options: { transaction?: any },
+  ) {
     if (task.stepId) {
       const step = await Step.findByPk(task.stepId, {
         transaction: options.transaction,
       });
-      if (step && typeof (step as any).recalculateProgress === 'function') {
-        await (step as any).recalculateProgress(options.transaction);
+      if (step && typeof step.recalculateProgress === 'function') {
+        await step.recalculateProgress(options.transaction);
       }
     }
   }
