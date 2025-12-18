@@ -34,4 +34,13 @@ export class AuthController {
   verifySignature(@Body() dto: VerifySignatureDto) {
     return this.authService.verifyAndLogin(dto.address, dto.signature);
   }
+
+  // ⚠️ ENDPOINT DE TEST - Décommenter uniquement pour les tests sans wallet
+  // À SUPPRIMER EN PRODUCTION !
+  // @Post('test-token')
+  // getTestToken(@Body() dto: ChallengeRequestDto) {
+  //   const payload = { address: dto.address };
+  //   const accessToken = this.authService['jwtService'].sign(payload);
+  //   return { accessToken };
+  // }
 }

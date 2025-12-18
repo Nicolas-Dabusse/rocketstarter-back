@@ -8,14 +8,14 @@ import { jwtConfig } from '../../config/jwt.config';
  */
 export interface JwtPayload {
   address: string; // Adresse Ethereum du wallet
-  iat: number;     // Issued At (timestamp de création)
-  exp: number;     // Expiration (timestamp)
+  iat: number; // Issued At (timestamp de création)
+  exp: number; // Expiration (timestamp)
 }
 
 /**
  * JwtStrategy
  * Valide les tokens JWT dans le header Authorization: Bearer <token>
- * 
+ *
  * Fonctionnement :
  * 1. Passport extrait automatiquement le token du header
  * 2. Vérifie la signature avec le secret
@@ -28,10 +28,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       // Extraire le token du header Authorization: Bearer <token>
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      
+
       // Ne pas ignorer l'expiration (rejeter les tokens expirés)
       ignoreExpiration: false,
-      
+
       // Secret pour vérifier la signature (même que pour la création)
       secretOrKey: jwtConfig.secret,
     });
@@ -47,7 +47,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     // - Vérifier que l'user existe toujours en DB
     // - Vérifier que le compte n'est pas banni
     // Pour l'instant, on retourne simplement l'adresse
-    
+
     return { address: payload.address };
   }
 }
