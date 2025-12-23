@@ -39,7 +39,7 @@ export class ProjectsService {
       bank: createProjectDto.bank || '0', // Par défaut : 0
       whitelist: createProjectDto.whitelist || [],
       status: createProjectDto.status || 'Draft', // Par défaut : Draft
-      ownerId: ownerId.toLowerCase(), // Normaliser l'adresse
+      owner: ownerId.toLowerCase(), // Normaliser l'adresse
     });
 
     // 2. Associer les catégories si fournies
@@ -56,9 +56,15 @@ export class ProjectsService {
     }
 
     // 3. Recharger le projet avec ses relations
-    return await this.projectModel.findByPk(project.id, {
-      include: [{ association: 'owner' }, { association: 'categories' }],
+    const reloadedProject = await this.projectModel.findByPk(project.id, {
+      include: [{ association: 'ownerUser' }, { association: 'categories' }],
     });
+
+    if (!reloadedProject) {
+      throw new NotFoundException(`Project creation failed`);
+    }
+
+    return reloadedProject;
   }
 
   /**
@@ -108,7 +114,7 @@ export class ProjectsService {
     const project = await this.findOne(id);
 
     // Vérifier que l'utilisateur est bien le propriétaire
-    if (project.ownerId !== userId.toLowerCase()) {
+    if (project.owner !== userId.toLowerCase()) {
       throw new ForbiddenException('You are not the owner of this project');
     }
 
@@ -151,7 +157,7 @@ export class ProjectsService {
     const project = await this.findOne(id);
 
     // Vérifier que l'utilisateur est bien le propriétaire
-    if (project.ownerId !== userId.toLowerCase()) {
+    if (project.owner !== userId.toLowerCase()) {
       throw new ForbiddenException('You are not the owner of this project');
     }
 
@@ -165,7 +171,7 @@ export class ProjectsService {
    */
   async findByOwner(ownerId: string): Promise<Project[]> {
     return await this.projectModel.findAll({
-      where: { ownerId: ownerId.toLowerCase() },
+      where: { owner: ownerId.toLowerCase() },
       include: [
         { association: 'owner' },
         { association: 'categories' },
