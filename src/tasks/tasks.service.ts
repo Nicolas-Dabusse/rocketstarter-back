@@ -2,10 +2,9 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
-  BadRequestException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { Task } from '../models/Task';
+import { Task, TaskStatus } from '../models/Task';
 import { Project } from '../models/Project';
 import { Category } from '../models/Category';
 import { TaskCategory } from '../models/TaskCategory';
@@ -136,12 +135,11 @@ export class TasksService {
     const userAddr = userAddress.toLowerCase();
 
     // Vérifier les rôles
-    const isProjectOwner = userAddr === project.owner?.toLowerCase();
     const isTaskOwner = userAddr === task.taskOwner?.toLowerCase();
     const isAssignedBuilder = userAddr === currentBuilder?.toLowerCase();
 
     // AUTO-FIX: Si task status=0 mais a un builder, nettoyer
-    if (currentStatus === 0 && currentBuilder) {
+    if (currentStatus === TaskStatus.TODO && currentBuilder) {
       await task.update({ builder: null, claimedAt: null });
       // Recharger après l'auto-fix
       await task.reload();
@@ -154,7 +152,10 @@ export class TasksService {
 
     // RÈGLE 1: Builder claim free task (0 → 1)
     // ✅ SÉCURITÉ: Vérifier que la task est VRAIMENT libre (builder === null)
-    if (currentStatus === 0 && newStatus === 1) {
+    if (
+      currentStatus === TaskStatus.TODO &&
+      newStatus === TaskStatus.IN_PROGRESS
+    ) {
       // Protection : la task doit être libre
       if (cleanedBuilder !== null) {
         throw new ForbiddenException(
@@ -164,14 +165,18 @@ export class TasksService {
 
       await task.update({
         builder: userAddr,
-        status: 1,
+        status: TaskStatus.IN_PROGRESS,
         claimedAt: new Date(),
       });
       return await this.findOne(id);
     }
 
     // RÈGLE 2: Builder releases task (1 → 0)
-    if (currentStatus === 1 && isAssignedBuilder && newStatus === 0) {
+    if (
+      currentStatus === TaskStatus.IN_PROGRESS &&
+      isAssignedBuilder &&
+      newStatus === TaskStatus.TODO
+    ) {
       await task.update({
         builder: null,
         status: 0,
@@ -186,22 +191,34 @@ export class TasksService {
     }
 
     // RÈGLE 3: Builder sends to review (1 → 2)
-    if (currentStatus === 1 && isAssignedBuilder && newStatus === 2) {
-      await task.update({ status: 2 });
+    if (
+      currentStatus === TaskStatus.IN_PROGRESS &&
+      isAssignedBuilder &&
+      newStatus === TaskStatus.IN_REVIEW
+    ) {
+      await task.update({ status: TaskStatus.IN_REVIEW });
       return await this.findOne(id);
     }
 
-    // RÈGLE 4: Builder takes back from review (2 → 1)
-    if (currentStatus === 2 && isAssignedBuilder && newStatus === 1) {
-      await task.update({ status: 1 });
+    // RÈGLE 4: Builder reject review (2 → 1)
+    if (
+      currentStatus === TaskStatus.IN_REVIEW &&
+      isAssignedBuilder &&
+      newStatus === TaskStatus.IN_PROGRESS
+    ) {
+      await task.update({ status: TaskStatus.IN_PROGRESS });
       return await this.findOne(id);
     }
 
     // RÈGLE 5: Builder releases from review (2 → 0)
-    if (currentStatus === 2 && isAssignedBuilder && newStatus === 0) {
+    if (
+      currentStatus === TaskStatus.IN_REVIEW &&
+      isAssignedBuilder &&
+      newStatus === TaskStatus.TODO
+    ) {
       await task.update({
         builder: null,
-        status: 0,
+        status: TaskStatus.TODO,
         claimedAt: null,
       });
       // Double vérification : s'assurer que builder est bien NULL
@@ -213,27 +230,39 @@ export class TasksService {
     }
 
     // RÈGLE 6: TaskOwner validates task (2 → 3) avec calcul durée
-    if (currentStatus === 2 && isTaskOwner && newStatus === 3) {
+    if (
+      currentStatus === TaskStatus.IN_REVIEW &&
+      isTaskOwner &&
+      newStatus === TaskStatus.DONE
+    ) {
       let durationHours = task.duration;
       if (task.claimedAt) {
         const start = new Date(task.claimedAt).getTime();
         const diffMs = Date.now() - start;
         durationHours = Math.max(0, Math.round(diffMs / (1000 * 60 * 60)));
       }
-      await task.update({ status: 3, duration: durationHours });
+      await task.update({ status: TaskStatus.DONE, duration: durationHours });
       return await this.findOne(id);
     }
 
     // RÈGLE 7: TaskOwner rejects review (2 → 1)
-    if (currentStatus === 2 && isTaskOwner && newStatus === 1) {
-      await task.update({ status: 1 });
+    if (
+      currentStatus === TaskStatus.IN_REVIEW &&
+      isTaskOwner &&
+      newStatus === TaskStatus.IN_PROGRESS
+    ) {
+      await task.update({ status: TaskStatus.IN_PROGRESS });
       return await this.findOne(id);
     }
 
     // ==================== PROTECTIONS ====================
 
     // LOCK: Status 2 (IN_REVIEW) est LOCKED au builder
-    if (currentStatus === 2 && !isAssignedBuilder && !isTaskOwner) {
+    if (
+      currentStatus === TaskStatus.IN_REVIEW &&
+      !isAssignedBuilder &&
+      !isTaskOwner
+    ) {
       throw new ForbiddenException(
         'Task in review is locked to assigned builder',
       );
@@ -241,7 +270,7 @@ export class TasksService {
 
     // LOCK: TaskOwner ne peut pas réassigner pendant review
     if (
-      currentStatus === 2 &&
+      currentStatus === TaskStatus.IN_REVIEW &&
       isTaskOwner &&
       updateTaskDto.builder !== undefined
     ) {
@@ -251,7 +280,11 @@ export class TasksService {
     }
 
     // PROTECTION: Pas de skip workflow (1→3 direct interdit)
-    if (isTaskOwner && currentStatus === 1 && newStatus === 3) {
+    if (
+      isTaskOwner &&
+      currentStatus === TaskStatus.IN_PROGRESS &&
+      newStatus === TaskStatus.DONE
+    ) {
       throw new ForbiddenException(
         'Cannot skip review process - task must go from in-progress (1) to review (2) first',
       );
@@ -263,7 +296,7 @@ export class TasksService {
     if (
       isTaskOwner &&
       updateTaskDto.builder !== undefined &&
-      currentStatus !== 2
+      currentStatus !== TaskStatus.IN_REVIEW
     ) {
       await task.update({ builder: updateTaskDto.builder || null });
       return await this.findOne(id);
@@ -274,11 +307,16 @@ export class TasksService {
       isTaskOwner &&
       newStatus !== undefined &&
       newStatus !== currentStatus &&
-      currentStatus !== 2 &&
-      !(currentStatus === 1 && newStatus === 3)
+      currentStatus !== TaskStatus.IN_REVIEW &&
+      !(
+        currentStatus === TaskStatus.IN_PROGRESS &&
+        newStatus === TaskStatus.DONE
+      )
     ) {
-      const updateData: any = { status: newStatus };
-      if (newStatus === 0) {
+      const updateData: { status: number; builder?: null; claimedAt?: null } = {
+        status: newStatus,
+      };
+      if (newStatus === TaskStatus.TODO) {
         updateData.builder = null;
         updateData.claimedAt = null;
       }
@@ -289,12 +327,8 @@ export class TasksService {
     // RÈGLE 10: Mise à jour du contenu (title, description, etc.)
     if (isTaskOwner || isAssignedBuilder) {
       // Extraire seulement les champs de contenu (pas status/builder)
-      const {
-        status: _,
-        builder: __,
-        categoryIds,
-        ...contentUpdates
-      } = updateTaskDto;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { status, builder, categoryIds, ...contentUpdates } = updateTaskDto;
 
       if (Object.keys(contentUpdates).length > 0) {
         await task.update(contentUpdates);
@@ -319,5 +353,27 @@ export class TasksService {
     throw new ForbiddenException(
       'Forbidden: workflow rule violation or unauthorized',
     );
+  }
+
+  async remove(id: number, userAddress: string): Promise<void> {
+    const task = await this.findOne(id);
+    const project = await this.projectModel.findByPk(task.projectId);
+
+    if (!project) {
+      throw new NotFoundException('Project not found');
+    }
+
+    const userAddr = userAddress.toLowerCase();
+    const isProjectOwner = userAddr === project.owner?.toLowerCase();
+    const isTaskOwner = userAddr === task.taskOwner?.toLowerCase();
+
+    // Seul le propriétaire du projet ou le propriétaire de la tâche peut supprimer
+    if (!isProjectOwner && !isTaskOwner) {
+      throw new ForbiddenException(
+        'You are not authorized to delete this task',
+      );
+    }
+
+    await task.destroy();
   }
 }
