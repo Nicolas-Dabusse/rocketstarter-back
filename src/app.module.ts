@@ -6,9 +6,19 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ProjectsModule } from './projects/projects.module';
 import { TasksModule } from './tasks/tasks.module';
+import { StepsModule } from './steps/steps.module';
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
-  imports: [DatabaseModule, AuthModule, UsersModule, ProjectsModule, TasksModule],
+  imports: [
+    DatabaseModule,
+    AuthModule,
+    UsersModule,
+    ProjectsModule,
+    TasksModule,
+    StepsModule,
+    CategoriesModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -83,17 +83,36 @@ export class ProjectsService {
    * @param id - UUID du projet
    * @returns Projet avec ses relations
    */
-  async findOne(id: string): Promise<Project> {
-    const project = await this.projectModel.findByPk(id, {
-      include: [
-        { association: 'owner' },
-        { association: 'categories' },
-        { association: 'steps' },
-      ],
-    });
+  async findOne(identifier: string): Promise<Project> {
+    let project: Project | null;
+
+    // Tenter de parser comme ID numérique
+    const id = parseInt(identifier, 10);
+    if (!isNaN(id)) {
+      // C'est un ID numérique
+      project = await this.projectModel.findByPk(id, {
+        include: [
+          { association: 'owner' },
+          { association: 'categories' },
+          { association: 'steps' },
+        ],
+      });
+    } else {
+      // C'est un slug
+      project = await this.projectModel.findOne({
+        where: { slug: identifier },
+        include: [
+          { association: 'owner' },
+          { association: 'categories' },
+          { association: 'steps' },
+        ],
+      });
+    }
 
     if (!project) {
-      throw new NotFoundException(`Project with id ${id} not found`);
+      throw new NotFoundException(
+        `Project with identifier "${identifier}" not found`,
+      );
     }
 
     return project;
