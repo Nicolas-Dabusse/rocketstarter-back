@@ -17,16 +17,15 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 /**
  * UsersController
  * Endpoints REST pour gérer les utilisateurs
- * Tous les endpoints sont protégés par JWT
+ * La création d'utilisateur est publique, les autres routes nécessitent un JWT
  */
 @Controller('users')
-@UseGuards(JwtAuthGuard) // ← Toutes les routes nécessitent un JWT valide
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   /**
    * POST /users
-   * Créer un nouvel utilisateur
+   * Créer un nouvel utilisateur (PUBLIC - pas de JWT requis)
    */
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
@@ -38,6 +37,7 @@ export class UsersController {
    * Récupérer tous les utilisateurs
    */
   @Get()
+  @UseGuards(JwtAuthGuard)
   findAll() {
     return this.usersService.findAll();
   }
@@ -47,6 +47,7 @@ export class UsersController {
    * Récupérer le profil de l'utilisateur connecté
    */
   @Get('me')
+  @UseGuards(JwtAuthGuard)
   getProfile(@Request() req: any) {
     // req.user.address vient du JWT (fourni par JwtStrategy)
     return this.usersService.findOne(req.user.address);
@@ -57,6 +58,7 @@ export class UsersController {
    * Récupérer un utilisateur par son adresse
    */
   @Get(':address')
+  @UseGuards(JwtAuthGuard)
   findOne(@Param('address') address: string) {
     return this.usersService.findOne(address);
   }
@@ -66,6 +68,7 @@ export class UsersController {
    * Mettre à jour un utilisateur
    */
   @Patch(':address')
+  @UseGuards(JwtAuthGuard)
   update(
     @Param('address') address: string,
     @Body() updateUserDto: UpdateUserDto,
@@ -78,6 +81,7 @@ export class UsersController {
    * Supprimer un utilisateur
    */
   @Delete(':address')
+  @UseGuards(JwtAuthGuard)
   remove(@Param('address') address: string) {
     return this.usersService.remove(address);
   }

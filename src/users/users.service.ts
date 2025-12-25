@@ -32,7 +32,7 @@ export class UsersService {
       return await this.userModel.create({
         address,
         email: createUserDto.email,
-        pseudo: createUserDto.pseudo,
+        username: createUserDto.username,
         role: createUserDto.role || 'Builder', // Par défaut: Builder
       });
     } catch (error: any) {
