@@ -1,9 +1,22 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
+import * as cookieParser from 'cookie-parser';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Helmet - Headers de sécurité HTTP
+  app.use(
+    helmet({
+      contentSecurityPolicy: process.env.NODE_ENV === 'production', // CSP en prod
+      crossOriginEmbedderPolicy: false, // Désactivé pour compatibilité CORS
+    }),
+  );
+
+  // Cookie parser pour gérer les cookies httpOnly
+  app.use(cookieParser());
 
   // Global prefix pour toutes les routes (sauf /health)
   app.setGlobalPrefix('api/v1', {
@@ -19,9 +32,9 @@ async function bootstrap() {
     }),
   );
 
-  // CORS
+  // CORS - credentials: true permet l'envoi de cookies cross-origin
   app.enableCors({
-    origin: 'http://127.0.0.1:5173',
+    origin: ['http://127.0.0.1:5173', 'http://localhost:5173'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: [

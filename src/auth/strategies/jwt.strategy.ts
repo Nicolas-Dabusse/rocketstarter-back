@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { Request } from 'express';
 import { jwtConfig } from '../../config/jwt.config';
 
 /**
@@ -13,11 +14,22 @@ export interface JwtPayload {
 }
 
 /**
+ * Extracteur custom : lit le JWT depuis le cookie OU le header Authorization
+ */
+const cookieExtractor = (req: Request): string | null => {
+  let token = null;
+  if (req && req.cookies) {
+    token = req.cookies['access_token']; // Nom du cookie défini dans auth.controller.ts
+  }
+  return token;
+};
+
+/**
  * JwtStrategy
- * Valide les tokens JWT dans le header Authorization: Bearer <token>
+ * Valide les tokens JWT depuis le cookie httpOnly OU le header Authorization
  *
  * Fonctionnement :
- * 1. Passport extrait automatiquement le token du header
+ * 1. Passport extrait le token du cookie (ou du header en fallback)
  * 2. Vérifie la signature avec le secret
  * 3. Vérifie l'expiration
  * 4. Si valide → appelle validate() avec le payload décodé
@@ -26,8 +38,11 @@ export interface JwtPayload {
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
     super({
-      // Extraire le token du header Authorization: Bearer <token>
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      // Extraire le token du cookie en priorité, sinon du header Authorization
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        cookieExtractor,
+        ExtractJwt.fromAuthHeaderAsBearerToken(),
+      ]),
 
       // Ne pas ignorer l'expiration (rejeter les tokens expirés)
       ignoreExpiration: false,
