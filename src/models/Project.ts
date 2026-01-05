@@ -99,7 +99,7 @@ export class Project extends Model {
   })
   owner: string;
 
-  @BelongsTo(() => User)
+  @BelongsTo(() => User, { as: 'ownerUser' })
   ownerUser: User;
 
   // Bank as string to preserve DECIMAL precision (crypto amounts)

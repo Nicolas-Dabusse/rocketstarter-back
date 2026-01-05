@@ -1,5 +1,5 @@
 import { Body, Controller, Post, Get, UseGuards, Request, Res } from '@nestjs/common';
-import { Response } from 'express';
+import type { Response } from 'express';
 import { AuthService } from './services/auth.service';
 import { ChallengeRequestDto } from './dto/challenge-request.dto';
 import { VerifySignatureDto } from './dto/verify-signature.dto';

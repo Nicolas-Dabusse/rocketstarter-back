@@ -73,7 +73,7 @@ export class ProjectsService {
    */
   async findAll(): Promise<Project[]> {
     return await this.projectModel.findAll({
-      include: [{ association: 'owner' }, { association: 'categories' }],
+      include: [{ association: 'ownerUser' }, { association: 'categories' }],
       order: [['createdAt', 'DESC']],
     });
   }
@@ -92,7 +92,7 @@ export class ProjectsService {
       // C'est un ID numérique
       project = await this.projectModel.findByPk(id, {
         include: [
-          { association: 'owner' },
+          { association: 'ownerUser' },
           { association: 'categories' },
           { association: 'steps' },
         ],
@@ -102,7 +102,7 @@ export class ProjectsService {
       project = await this.projectModel.findOne({
         where: { slug: identifier },
         include: [
-          { association: 'owner' },
+          { association: 'ownerUser' },
           { association: 'categories' },
           { association: 'steps' },
         ],
@@ -192,7 +192,7 @@ export class ProjectsService {
     return await this.projectModel.findAll({
       where: { owner: ownerId.toLowerCase() },
       include: [
-        { association: 'owner' },
+        { association: 'ownerUser' },
         { association: 'categories' },
         { association: 'steps' },
       ],

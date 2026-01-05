@@ -31,11 +31,14 @@ export class AuthService {
       throw new UnauthorizedException('Invalid Ethereum address format');
     }
 
-    // Créer un nonce unique (expire dans 5 minutes)
-    const nonce = this.nonceService.create(address);
+    // Générer un nonce unique temporaire
+    const tempNonce = this.nonceService['generateRandomString']();
 
-    // Générer le message à signer (même format que votre ancien code)
-    const message = this.signatureService.generateMessage(nonce);
+    // Générer le message avec le nonce et timestamp actuel
+    const message = this.signatureService.generateMessage(tempNonce);
+
+    // Stocker le nonce ET le message (pour éviter de le regénérer différemment)
+    const nonce = this.nonceService.create(address, message);
 
     return { message, nonce };
   }
@@ -47,16 +50,13 @@ export class AuthService {
    * @returns JWT access token
    */
   verifyAndLogin(address: string, signature: string): { accessToken: string } {
-    // Récupérer le nonce (sans le supprimer encore)
-    const nonce = this.nonceService.get(address);
-    if (!nonce) {
+    // Récupérer le message stocké (avec le timestamp original)
+    const message = this.nonceService.getMessage(address);
+    if (!message) {
       throw new UnauthorizedException(
         'No valid challenge found. Please request a new challenge.',
       );
     }
-
-    // Regénérer le message original
-    const message = this.signatureService.generateMessage(nonce);
 
     // Vérifier que la signature correspond bien au message + address
     const result = this.signatureService.verify(message, signature);

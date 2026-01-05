@@ -6,6 +6,7 @@ import { randomBytes } from 'crypto';
  */
 interface NonceData {
   nonce: string;
+  message: string; // Message complet à signer (avec timestamp fixé)
   timestamp: number;
   expiresAt: number;
 }
@@ -43,14 +44,16 @@ export class NonceService implements OnModuleDestroy {
   /**
    * Generate and store a new nonce for an address
    * @param address - Wallet address (will be normalized to lowercase)
+   * @param message - The complete message to sign (with fixed timestamp)
    * @returns Generated nonce string
    */
-  create(address: string): string {
+  create(address: string, message: string): string {
     const nonce = this.generateRandomString();
     const now = Date.now();
 
     this.store.set(address.toLowerCase(), {
       nonce,
+      message, // Stocker le message complet
       timestamp: now,
       expiresAt: now + this.NONCE_TTL,
     });
@@ -77,6 +80,27 @@ export class NonceService implements OnModuleDestroy {
     }
 
     return data.nonce;
+  }
+
+  /**
+   * Retrieve the stored message for an address
+   * @param address - Wallet address
+   * @returns Message if valid and not expired, null otherwise
+   */
+  getMessage(address: string): string | null {
+    const data = this.store.get(address.toLowerCase());
+
+    if (!data) {
+      return null;
+    }
+
+    // Check expiration
+    if (Date.now() > data.expiresAt) {
+      this.store.delete(address.toLowerCase());
+      return null;
+    }
+
+    return data.message;
   }
 
   /**
