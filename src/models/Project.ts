@@ -13,10 +13,12 @@ import {
   Default,
   AllowNull,
   Unique,
+  HasMany
 } from 'sequelize-typescript';
 import { User } from './User';
 import { Category } from './Category';
 import { ProjectCategory } from './ProjectCategory';
+import { Step } from './Step';
 
 export enum ProjectStatus {
   UNSPECIFIED = 0,
@@ -183,4 +185,7 @@ export class Project extends Model {
   // Many-to-Many relation with Category
   @BelongsToMany(() => Category, () => ProjectCategory)
   categories: Category[];
+
+  @HasMany(() => Step, { as: 'steps', foreignKey: 'projectId' })
+  steps: Step[];
 }
