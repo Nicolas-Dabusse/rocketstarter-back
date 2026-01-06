@@ -61,17 +61,17 @@ export class Task extends Model {
     type: DataType.INTEGER,
     allowNull: false,
   })
-  projectId: number;
+  declare projectId: number;
 
-  @BelongsTo(() => Project)
-  project: Project;
+  @BelongsTo(() => Project, { as: 'parentProject' })
+  parentProject: Project;
 
   @ForeignKey(() => Step)
   @AllowNull(true)
   @Column({
     type: DataType.INTEGER,
   })
-  stepId?: number;
+  declare stepId?: number;
 
   @BelongsTo(() => Step)
   step?: Step;
@@ -83,32 +83,32 @@ export class Task extends Model {
       len: [3, 255],
     },
   })
-  title: string;
+  declare title: string;
 
   @AllowNull(true)
   @Column({
     type: DataType.STRING(512),
   })
-  image?: string;
+  declare description?: string;
 
   @AllowNull(true)
   @Column({
     type: DataType.TEXT,
   })
-  description?: string;
+  declare image?: string;
 
   @AllowNull(true)
   @Column({
     type: DataType.STRING(512),
   })
-  link?: string;
+  declare link?: string;
 
   @ForeignKey(() => User)
   @AllowNull(true)
   @Column({
     type: DataType.STRING(255),
   })
-  taskOwner?: string;
+  declare taskOwner?: string;
 
   @BelongsTo(() => User, 'taskOwner')
   ownerUser?: User;
@@ -118,7 +118,7 @@ export class Task extends Model {
   @Column({
     type: DataType.STRING(255),
   })
-  builder?: string;
+  declare builder?: string;
 
   @BelongsTo(() => User, 'builder')
   builderUser?: User;
@@ -145,7 +145,7 @@ export class Task extends Model {
       isIn: [[1, 2, 3, 5, 8, 13]],
     },
   })
-  effort?: number;
+  declare effort?: number;
 
   @AllowNull(true)
   @Column({
@@ -155,7 +155,7 @@ export class Task extends Model {
       max: 2,
     },
   })
-  priority?: TaskPriority;
+  declare priority?: number;
 
   @Default(TaskStatus.TODO)
   @Column({
@@ -166,13 +166,13 @@ export class Task extends Model {
       max: 3,
     },
   })
-  status: TaskStatus;
+  declare status: number;
 
   @AllowNull(true)
   @Column({
     type: DataType.DATE,
   })
-  dueDate?: Date;
+  declare dueDate?: Date;
 
   @AllowNull(true)
   @Column({
@@ -182,19 +182,19 @@ export class Task extends Model {
       max: 2,
     },
   })
-  dueDateStatus?: DueDateStatus;
+  declare dueDateStatus?: number;
 
   @AllowNull(true)
   @Column({
     type: DataType.DATE,
   })
-  claimedAt?: Date;
+  declare claimedAt?: Date;
 
   @AllowNull(true)
   @Column({
     type: DataType.INTEGER,
   })
-  duration?: number;
+  declare duration?: number;
 
   // Many-to-Many relation with Category
   @BelongsToMany(() => Category, () => TaskCategory)

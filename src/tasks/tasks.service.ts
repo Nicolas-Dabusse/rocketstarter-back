@@ -73,7 +73,7 @@ export class TasksService {
     // Recharger avec relations
     const reloadedTask = await this.taskModel.findByPk(task.id, {
       include: [
-        { association: 'project' },
+        { association: 'parentProject' },
         { association: 'ownerUser' },
         { association: 'categories' },
       ],
@@ -89,7 +89,7 @@ export class TasksService {
   async findAll(): Promise<Task[]> {
     return await this.taskModel.findAll({
       include: [
-        { association: 'project' },
+        { association: 'parentProject' },
         { association: 'ownerUser' },
         { association: 'categories' },
       ],
@@ -100,7 +100,7 @@ export class TasksService {
   async findOne(id: number): Promise<Task> {
     const task = await this.taskModel.findByPk(id, {
       include: [
-        { association: 'project' },
+        { association: 'parentProject' },
         { association: 'ownerUser' },
         { association: 'categories' },
       ],
@@ -118,12 +118,14 @@ export class TasksService {
    * @param userAddress - Adresse de l'utilisateur (depuis JWT)
    */
   async update(
+ 
     id: number,
     updateTaskDto: UpdateTaskDto,
     userAddress: string,
   ): Promise<Task> {
     const task = await this.findOne(id);
-    const project = await this.projectModel.findByPk(task.projectId);
+    const projectId = task.get('projectId');
+    const project = await this.projectModel.findByPk(projectId);
 
     if (!project) {
       throw new NotFoundException('Project not found');
@@ -133,10 +135,6 @@ export class TasksService {
     const newStatus = updateTaskDto.status;
     const currentBuilder = task.builder;
     const userAddr = userAddress.toLowerCase();
-
-    // Vérifier les rôles
-    const isTaskOwner = userAddr === task.taskOwner?.toLowerCase();
-    const isAssignedBuilder = userAddr === currentBuilder?.toLowerCase();
 
     // AUTO-FIX: Si task status=0 mais a un builder, nettoyer
     if (currentStatus === TaskStatus.TODO && currentBuilder) {
@@ -148,7 +146,11 @@ export class TasksService {
     // Mise à jour de currentBuilder après auto-fix
     const cleanedBuilder = task.builder;
 
-    // ==================== TRANSITIONS DE STATUT ====================
+    // Vérifier les rôles
+    const isTaskOwner = userAddr === task.taskOwner?.toLowerCase();
+    const isAssignedBuilder = userAddr === currentBuilder?.toLowerCase();
+
+    // ==================== TRANSITIONS DE STATUT ======================================
 
     // RÈGLE 1: Builder claim free task (0 → 1)
     // ✅ SÉCURITÉ: Vérifier que la task est VRAIMENT libre (builder === null)

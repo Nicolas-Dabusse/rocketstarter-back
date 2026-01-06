@@ -35,7 +35,7 @@ export class Step extends Model {
     type: DataType.INTEGER,
     allowNull: false,
   })
-  projectId: number;
+  declare projectId: number;
 
   @BelongsTo(() => Project)
   project: Project;
@@ -47,13 +47,13 @@ export class Step extends Model {
       len: [3, 255],
     },
   })
-  name: string;
+  declare name: string;
 
   @AllowNull(true)
   @Column({
     type: DataType.TEXT,
   })
-  description?: string;
+  declare description?: string;
 
   @Default(0)
   @Column({
@@ -64,7 +64,7 @@ export class Step extends Model {
       max: 100,
     },
   })
-  progress: number;
+  declare progress: number;
 
   @CreatedAt
   @Column({
