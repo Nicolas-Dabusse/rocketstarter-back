@@ -40,6 +40,7 @@ export class ProjectsService {
       whitelist: createProjectDto.whitelist || [],
       status: createProjectDto.status || 'Draft', // Par défaut : Draft
       owner: ownerId.toLowerCase(), // Normaliser l'adresse
+      // slug ignoré : généré automatiquement
     });
 
     // 2. Associer les catégories si fournies
@@ -144,6 +145,7 @@ export class ProjectsService {
       logoUrl: updateProjectDto.logoUrl,
       whitelist: updateProjectDto.whitelist,
       status: updateProjectDto.status,
+      // slug ignoré : généré automatiquement
     });
 
     // Mettre à jour les catégories si fournies

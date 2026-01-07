@@ -42,4 +42,5 @@ export class UpdateProjectDto {
   @IsNumber({}, { each: true })
   @IsOptional()
   categoryIds?: number[];
+  // slug supprimé : généré automatiquement
 }

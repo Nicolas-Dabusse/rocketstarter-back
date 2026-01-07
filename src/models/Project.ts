@@ -13,8 +13,12 @@ import {
   Default,
   AllowNull,
   Unique,
-  HasMany
+  HasMany,
+  BeforeCreate,
+  BeforeUpdate,
 } from 'sequelize-typescript';
+import { Op } from 'sequelize';
+import slugify from 'slugify';
 import { User } from './User';
 import { Category } from './Category';
 import { ProjectCategory } from './ProjectCategory';
@@ -32,6 +36,59 @@ export enum ProjectStatus {
   timestamps: true,
 })
 export class Project extends Model {
+  @BeforeCreate
+  static async generateSlugOnCreate(instance: Project) {
+    await Project.generateUniqueSlug(instance);
+  }
+
+  @BeforeUpdate
+  static async generateSlugOnUpdate(instance: Project) {
+    // Ne regénère le slug que si le nom a changé
+    if (instance.changed('name')) {
+      await Project.generateUniqueSlug(instance);
+    }
+  }
+
+  private static async generateUniqueSlug(instance: Project) {
+    if (!instance.name) {
+      throw new Error('Le nom du projet est requis pour générer un slug.');
+    }
+
+    // Vérifie unicité du nom (case-insensitive)
+    const nameExists = await Project.findOne({
+      where: {
+        name: instance.name,
+        id: { [Op.ne]: instance.id || null },
+      },
+    });
+    if (nameExists) {
+      throw new Error('Un projet avec ce nom existe déjà.');
+    }
+
+    // Génère un slug de base
+    let baseSlug = slugify(instance.name, {
+      lower: true,
+      strict: true,
+      remove: /[*+~.()'"!:@]/g,
+    });
+    let slug = baseSlug;
+    let count = 1;
+
+    // Cherche un slug unique
+    while (true) {
+      const existing = await Project.findOne({
+        where: {
+          slug: slug,
+          id: { [Op.ne]: instance.id || null },
+        },
+      });
+      if (!existing) break;
+      slug = `${baseSlug}-${count}`;
+      count++;
+    }
+    
+    instance.slug = slug;
+  }
   @PrimaryKey
   @AutoIncrement
   @Column({

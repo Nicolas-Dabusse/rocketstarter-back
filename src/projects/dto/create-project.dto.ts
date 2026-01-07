@@ -41,4 +41,5 @@ export class CreateProjectDto {
   @IsNumber({}, { each: true }) // Valide que chaque élément est un nombre
   @IsOptional()
   categoryIds?: number[]; // IDs des catégories à associer
+  // slug supprimé : généré automatiquement
 }
