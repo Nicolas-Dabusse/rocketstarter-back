@@ -12,7 +12,7 @@ export class UpdateUserDto {
 
   @IsString()
   @IsOptional()
-  pseudo?: string;
+  username?: string;
 
   @IsEnum(UserRole)
   @IsOptional()
