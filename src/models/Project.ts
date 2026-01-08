@@ -38,7 +38,10 @@ export enum ProjectStatus {
 export class Project extends Model {
   @BeforeCreate
   static async generateSlugOnCreate(instance: Project) {
-    await Project.generateUniqueSlug(instance);
+    // Ne génère le slug que s'il n'est pas déjà fourni
+    if (!instance.slug && instance.name) {
+      await Project.generateUniqueSlug(instance);
+    }
   }
 
   @BeforeUpdate
@@ -66,7 +69,7 @@ export class Project extends Model {
     }
 
     // Génère un slug de base
-    let baseSlug = slugify(instance.name, {
+    const baseSlug = slugify(instance.name, {
       lower: true,
       strict: true,
       remove: /[*+~.()'"!:@]/g,
@@ -86,7 +89,7 @@ export class Project extends Model {
       slug = `${baseSlug}-${count}`;
       count++;
     }
-    
+
     instance.slug = slug;
   }
   @PrimaryKey

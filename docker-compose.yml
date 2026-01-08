@@ -10,7 +10,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
     ports:
-      - "${DB_PORT:-5432}:5432"
+      - "${DB_PORT_HOST:-5433}:5432" # host:container
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -33,8 +33,8 @@ services:
     environment:
       NODE_ENV: ${NODE_ENV}
       PORT: ${PORT}
-      DB_HOST: postgres
-      DB_PORT: 5432
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT} # 5432 → port interne Postgres
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}

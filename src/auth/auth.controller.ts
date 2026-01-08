@@ -1,4 +1,12 @@
-import { Body, Controller, Post, Get, UseGuards, Request, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  Get,
+  UseGuards,
+  Request,
+  Res,
+} from '@nestjs/common';
 import type { Response } from 'express';
 import { AuthService } from './services/auth.service';
 import { ChallengeRequestDto } from './dto/challenge-request.dto';
@@ -49,8 +57,8 @@ export class AuthController {
     // Définir le cookie httpOnly (sécurisé)
     res.cookie('access_token', accessToken, {
       httpOnly: true, // Inaccessible via JavaScript (XSS protection)
-      secure: process.env.NODE_ENV === 'production', // HTTPS uniquement en production
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax', // strict en prod, lax en dev
+      secure: false, // false en dev pour HTTP local
+      sameSite: 'lax', // 'none' en dev pour cross-origin (127.0.0.1 <-> localhost)
       maxAge: 24 * 60 * 60 * 1000, // 24 heures
       path: '/',
       // domain: '.votre-domaine.com', // À décommenter en production pour domaine/sous-domaines
@@ -83,8 +91,8 @@ export class AuthController {
   logout(@Res({ passthrough: true }) res: Response) {
     res.clearCookie('access_token', {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+      secure: false,
+      sameSite: 'none',
       path: '/',
       // domain: '.votre-domaine.com', // Doit correspondre au cookie original
     });

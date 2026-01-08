@@ -118,21 +118,21 @@ async function seed() {
     }
 
     // Projects
-    const [project] = await Project.findOrCreate({
-      where: { slug: 'kudora' },
-      defaults: {
+    let project = await Project.findOne({ where: { name: 'Kudora' } });
+    if (!project) {
+      project = await Project.create({
         name: 'Kudora',
         slug: 'kudora',
         description: 'Plateforme de lancement de projets Web3',
         owner: '0xOWNER1234567890',
         logo: 'https://example.com/kudora-logo.png',
-      },
-    });
+      });
+    }
 
     // Second projet factice
-    const [project2] = await Project.findOrCreate({
-      where: { slug: 'dora' },
-      defaults: {
+    let project2 = await Project.findOne({ where: { name: 'Dora' } });
+    if (!project2) {
+      project2 = await Project.create({
         name: 'Dora',
         slug: 'dora',
         description: 'Gestionnaire de tâches pour la communauté Dora',
@@ -141,8 +141,8 @@ async function seed() {
         bank: '1000',
         whitelist: ['0xBUILDER333', '0xBUILDER444'],
         projectStatus: 1,
-      },
-    });
+      });
+    }
 
     // Categories
     const categories = [
@@ -181,12 +181,7 @@ async function seed() {
     }
 
     // Steps pour Dora
-    const stepNames2 = [
-      'Idéation',
-      'Développement',
-      'Tests',
-      'Lancement',
-    ];
+    const stepNames2 = ['Idéation', 'Développement', 'Tests', 'Lancement'];
     const stepInstances2: { [key: string]: any } = {};
     for (const stepName of stepNames2) {
       const [step] = await Step.findOrCreate({
@@ -331,7 +326,8 @@ async function seed() {
         taskOwner: '0x54a02a5f1cf815d28543c8522f78794bd81f3ed5',
         stepName: 'Développement',
         title: 'Intégrer la gestion des notifications',
-        description: 'Notifier les utilisateurs lors de changements importants.',
+        description:
+          'Notifier les utilisateurs lors de changements importants.',
         effort: 8,
         priority: 2,
         status: 1,
