@@ -1,5 +1,6 @@
 import { IsEmail, IsEnum, IsOptional, IsString } from 'class-validator';
 import { UserRole } from '../../models/User';
+import { Sanitize } from '../../common/decorators/sanitize.decorator';
 
 /**
  * DTO pour créer un nouvel utilisateur
@@ -12,6 +13,7 @@ export class CreateUserDto {
   @IsOptional()
   email?: string;
 
+  @Sanitize()
   @IsString()
   @IsOptional()
   username?: string;

@@ -11,6 +11,7 @@ import {
   IsDateString,
 } from 'class-validator';
 import { TaskStatus, TaskPriority } from '../../models/Task';
+import { Sanitize, SanitizeUrl } from '../../common/decorators/sanitize.decorator';
 
 /**
  * DTO pour créer une nouvelle tâche
@@ -23,17 +24,21 @@ export class CreateTaskDto {
   @IsOptional()
   stepId?: number; // Optionnel : à quelle étape appartient la task
 
+  @Sanitize()
   @IsString()
   title: string;
 
+  @Sanitize(true) // Formatage basique autorisé
   @IsString()
   @IsOptional()
   description?: string;
 
+  @SanitizeUrl()
   @IsUrl()
   @IsOptional()
   image?: string;
 
+  @SanitizeUrl()
   @IsUrl()
   @IsOptional()
   link?: string;

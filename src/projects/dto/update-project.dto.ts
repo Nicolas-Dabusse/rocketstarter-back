@@ -8,6 +8,10 @@ import {
   IsEthereumAddress,
 } from 'class-validator';
 import { ProjectStatus } from '../../models/Project';
+import {
+  Sanitize,
+  SanitizeUrl,
+} from '../../common/decorators/sanitize.decorator';
 
 /**
  * DTO pour mettre à jour un projet
@@ -15,14 +19,17 @@ import { ProjectStatus } from '../../models/Project';
  * → Il est synchronisé automatiquement depuis la blockchain
  */
 export class UpdateProjectDto {
+  @Sanitize()
   @IsString()
   @IsOptional()
   name?: string;
 
+  @Sanitize(true)
   @IsString()
   @IsOptional()
   description?: string;
 
+  @SanitizeUrl()
   @IsUrl()
   @IsOptional()
   logoUrl?: string;

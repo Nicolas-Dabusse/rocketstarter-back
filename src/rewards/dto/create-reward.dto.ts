@@ -5,6 +5,7 @@ import {
   IsEnum,
   IsEthereumAddress,
 } from 'class-validator';
+import { Sanitize } from '../../common/decorators/sanitize.decorator';
 
 export enum RewardTypeDto {
   TOKEN = 'token',
@@ -28,6 +29,7 @@ export class CreateRewardDto {
   @IsEthereumAddress()
   contractAddress?: string;
 
+  @Sanitize(true)
   @IsOptional()
   @IsString()
   details?: string;

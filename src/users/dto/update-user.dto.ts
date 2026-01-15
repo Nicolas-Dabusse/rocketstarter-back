@@ -1,5 +1,6 @@
 import { IsEmail, IsEnum, IsOptional, IsString } from 'class-validator';
 import { UserRole } from '../../models/User';
+import { Sanitize } from '../../common/decorators/sanitize.decorator';
 
 /**
  * DTO pour mettre à jour un utilisateur
@@ -10,6 +11,7 @@ export class UpdateUserDto {
   @IsOptional()
   email?: string;
 
+  @Sanitize()
   @IsString()
   @IsOptional()
   username?: string;

@@ -5,6 +5,7 @@ import {
   IsEthereumAddress,
 } from 'class-validator';
 import { RewardTypeDto } from './create-reward.dto';
+import { Sanitize } from '../../common/decorators/sanitize.decorator';
 
 /**
  * DTO pour mettre à jour une récompense
@@ -24,6 +25,7 @@ export class UpdateRewardDto {
   @IsEthereumAddress()
   contractAddress?: string;
 
+  @Sanitize(true)
   @IsOptional()
   @IsString()
   details?: string;

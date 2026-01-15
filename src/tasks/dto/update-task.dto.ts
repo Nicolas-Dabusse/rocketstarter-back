@@ -11,6 +11,7 @@ import {
   IsDateString,
 } from 'class-validator';
 import { TaskStatus, TaskPriority } from '../../models/Task';
+import { Sanitize, SanitizeUrl } from '../../common/decorators/sanitize.decorator';
 
 /**
  * DTO pour mettre à jour une tâche
@@ -24,18 +25,22 @@ export class UpdateTaskDto {
   @IsOptional()
   stepId?: number;
 
+  @Sanitize()
   @IsString()
   @IsOptional()
   title?: string;
 
+  @Sanitize(true)
   @IsString()
   @IsOptional()
   description?: string;
 
+  @SanitizeUrl()
   @IsUrl()
   @IsOptional()
   image?: string;
 
+  @SanitizeUrl()
   @IsUrl()
   @IsOptional()
   link?: string;

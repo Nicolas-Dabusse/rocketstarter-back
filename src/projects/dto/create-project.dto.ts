@@ -8,18 +8,25 @@ import {
   IsEthereumAddress,
 } from 'class-validator';
 import { ProjectStatus } from '../../models/Project';
+import {
+  Sanitize,
+  SanitizeUrl,
+} from '../../common/decorators/sanitize.decorator';
 
 /**
  * DTO pour créer un nouveau projet
  */
 export class CreateProjectDto {
+  @Sanitize()
   @IsString()
   name: string;
 
+  @Sanitize(true) // Formatage basique autorisé pour description
   @IsString()
   @IsOptional()
   description?: string;
 
+  @SanitizeUrl()
   @IsUrl()
   @IsOptional()
   logoUrl?: string;
