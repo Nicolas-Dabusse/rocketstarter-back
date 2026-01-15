@@ -43,6 +43,10 @@ async function bootstrap() {
       'Accept',
       'x-user-address',
     ],
+    exposedHeaders: ['Set-Cookie'],
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+    maxAge: 86400, // Cache preflight pendant 24h pour réduire les OPTIONS
   });
 
   await app.listen(process.env.PORT ?? 3000);

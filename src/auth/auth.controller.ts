@@ -92,7 +92,7 @@ export class AuthController {
     res.clearCookie('access_token', {
       httpOnly: true,
       secure: false,
-      sameSite: 'none',
+      sameSite: 'lax', // DOIT correspondre EXACTEMENT à l'option dans /auth/verify
       path: '/',
       // domain: '.votre-domaine.com', // Doit correspondre au cookie original
     });
