@@ -230,16 +230,8 @@ export class Project extends Model {
       throw new Error('Le nom du projet est requis pour générer un slug.');
     }
 
-    // Vérifie unicité du nom (case-insensitive)
-    const nameExists = await Project.findOne({
-      where: {
-        name: name,
-        id: { [Op.ne]: instance.getDataValue('id') || null },
-      },
-    });
-    if (nameExists) {
-      throw new Error('Un projet avec ce nom existe déjà.');
-    }
+    // Note: Plusieurs projets peuvent avoir le même nom
+    // Seul le slug doit être unique (géré automatiquement ci-dessous)
 
     // Génère un slug de base
     const baseSlug = slugify(name, {
