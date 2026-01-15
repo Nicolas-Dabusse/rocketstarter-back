@@ -9,8 +9,16 @@ import {
   BelongsTo,
   CreatedAt,
   AllowNull,
+  Default,
 } from 'sequelize-typescript';
 import { Task } from './Task';
+
+export enum RewardType {
+  TOKEN = 'token',
+  NFT = 'nft',
+  REPUTATION = 'reputation',
+  CUSTOM = 'custom',
+}
 
 @Table({
   tableName: 'Reward',
@@ -33,7 +41,7 @@ export class Reward extends Model {
       isIn: [['token', 'nft', 'reputation', 'custom']],
     },
   })
-  type: string;
+  declare type: string;
 
   // Value as string to preserve precision (crypto amounts)
   @Column({
@@ -43,7 +51,7 @@ export class Reward extends Model {
       notEmpty: true,
     },
   })
-  value: string;
+  declare value: string;
 
   @AllowNull(true)
   @Column({
@@ -53,23 +61,53 @@ export class Reward extends Model {
       is: /^(0x[a-fA-F0-9]{40})?$/,
     },
   })
-  contractAddress?: string;
+  declare contractAddress?: string;
 
   @AllowNull(true)
   @Column({
     type: DataType.TEXT,
   })
-  details?: string;
+  declare details?: string;
 
   @ForeignKey(() => Task)
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
   })
-  taskId: number;
+  declare taskId: number;
 
   @BelongsTo(() => Task)
   task: Task;
+
+  // ==================== BLOCKCHAIN FIELDS ====================
+
+  @Default(false)
+  @Column({
+    type: DataType.BOOLEAN,
+    allowNull: false,
+  })
+  declare onChain: boolean;
+
+  @AllowNull(true)
+  @Column({
+    type: DataType.STRING(66), // 0x + 64 hex chars
+    validate: {
+      is: /^(0x[a-fA-F0-9]{64})?$/,
+    },
+  })
+  declare transactionHash?: string;
+
+  @AllowNull(true)
+  @Column({
+    type: DataType.INTEGER,
+  })
+  declare blockNumber?: number;
+
+  @AllowNull(true)
+  @Column({
+    type: DataType.DATE,
+  })
+  declare publishedAt?: Date;
 
   @CreatedAt
   @Column({

@@ -10,6 +10,7 @@ import { ProjectsModule } from './projects/projects.module';
 import { TasksModule } from './tasks/tasks.module';
 import { StepsModule } from './steps/steps.module';
 import { CategoriesModule } from './categories/categories.module';
+import { RewardsModule } from './rewards/rewards.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { CategoriesModule } from './categories/categories.module';
     TasksModule,
     StepsModule,
     CategoriesModule,
+    RewardsModule,
   ],
   controllers: [AppController],
   providers: [
