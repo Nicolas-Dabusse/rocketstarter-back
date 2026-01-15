@@ -327,7 +327,8 @@ export class TasksService {
     }
 
     // RÈGLE 10: Mise à jour du contenu (title, description, etc.)
-    if (isTaskOwner || isAssignedBuilder) {
+    // ⚠️ SÉCURITÉ: Seul le taskOwner peut modifier le contenu de la tâche
+    if (isTaskOwner) {
       // Extraire seulement les champs de contenu (pas status/builder)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { status, builder, categoryIds, ...contentUpdates } = updateTaskDto;
