@@ -35,7 +35,7 @@ export class ProjectsService {
     const project = await this.projectModel.create({
       name: createProjectDto.name,
       description: createProjectDto.description,
-      logoUrl: createProjectDto.logoUrl,
+      logo: createProjectDto.logoUrl, // DTO utilise logoUrl, mais DB attend logo
       bank: createProjectDto.bank || '0', // Par défaut : 0
       whitelist: createProjectDto.whitelist || [],
       status: createProjectDto.status || 'Draft', // Par défaut : Draft
@@ -142,7 +142,7 @@ export class ProjectsService {
     await project.update({
       name: updateProjectDto.name,
       description: updateProjectDto.description,
-      logoUrl: updateProjectDto.logoUrl,
+      logo: updateProjectDto.logoUrl, // DTO utilise logoUrl, mais DB attend logo
       whitelist: updateProjectDto.whitelist,
       status: updateProjectDto.status,
       // slug ignoré : généré automatiquement
