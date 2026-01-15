@@ -125,7 +125,7 @@ async function seed() {
         slug: 'kudora',
         description: 'Plateforme de lancement de projets Web3',
         owner: '0xOWNER1234567890',
-        logo: 'https://example.com/kudora-logo.png',
+        logo: 'https://avatars.githubusercontent.com/u/226093968?s=200&v=4',
       });
     }
 

@@ -22,7 +22,7 @@ export enum RewardType {
 
 @Table({
   tableName: 'Reward',
-  timestamps: false,
+  timestamps: true,
 })
 export class Reward extends Model {
   @PrimaryKey
